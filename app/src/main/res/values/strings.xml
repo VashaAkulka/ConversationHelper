@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ConversationHelper</string>
+    <string name="hint_button_send">Сообщение</string>
 </resources>

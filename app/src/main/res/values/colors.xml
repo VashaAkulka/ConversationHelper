@@ -2,4 +2,8 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="text_color">#ececec</color>
+    <color name="hint_color">#b4b4b4</color>
+    <color name="background_color">#212121</color>
+    <color name="message_background_color">#2f2f2f</color>
 </resources>
