@@ -17,13 +17,13 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.example.conversationhelper.adapter.MessageAdapter;
+import com.example.conversationhelper.db.Database;
 import com.example.conversationhelper.gpt.ChatGptCallback;
 import com.example.conversationhelper.gpt.ChatGptClient;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MessengerActivity extends AppCompatActivity {
 
     private ArrayList<String> messages;
     private MessageAdapter adapter;
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_messenger);
 
         messageHistory = findViewById(R.id.message_history);
         editMessage = findViewById(R.id.edit_message);
@@ -54,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
+
+        Database.getInstance(getApplicationContext());
     }
 
     public void onClickSenderButton(View view) {
