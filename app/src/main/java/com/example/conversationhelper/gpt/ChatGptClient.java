@@ -23,7 +23,7 @@ public class ChatGptClient  {
 
     public static void send(String userMessage, ChatGptCallback callback) {
         Executors.newSingleThreadExecutor().execute(() -> {
-            List<Message> messages = Collections.singletonList(new Message("user", userMessage));
+            List<RequestMessage> messages = Collections.singletonList(new RequestMessage("user", userMessage));
             String jsonBody = gson.toJson(new ChatRequest("gpt-3.5-turbo", messages));
 
             Request request = new Request.Builder()

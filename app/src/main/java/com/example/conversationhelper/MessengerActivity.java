@@ -45,9 +45,12 @@ public class MessengerActivity extends AppCompatActivity {
 
         messageHistory = findViewById(R.id.message_history);
         editMessage = findViewById(R.id.edit_message);
+
         messages = new ArrayList<>();
+        messages.addAll(database.getMessageContentByChatId(chatId));
         adapter = new MessageAdapter(this, messages);
         messageHistory.setAdapter(adapter);
+
 
         speechRecognizerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),

@@ -6,6 +6,6 @@ public class ChatResponse {
     List<Choice> choices;
 
     static class Choice {
-        Message message;
+        RequestMessage message;
     }
 }

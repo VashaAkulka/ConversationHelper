@@ -4,9 +4,9 @@ import java.util.List;
 
 public class ChatRequest {
     String model;
-    List<Message> messages;
+    List<RequestMessage> messages;
 
-    ChatRequest(String model, List<Message> messages) {
+    ChatRequest(String model, List<RequestMessage> messages) {
         this.model = model;
         this.messages = messages;
     }

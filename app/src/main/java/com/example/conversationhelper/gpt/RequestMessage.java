@@ -1,10 +1,10 @@
 package com.example.conversationhelper.gpt;
 
-public class Message {
+public class RequestMessage {
     String role;
     String content;
 
-    Message(String role, String content) {
+    RequestMessage(String role, String content) {
         this.role = role;
         this.content = content;
     }

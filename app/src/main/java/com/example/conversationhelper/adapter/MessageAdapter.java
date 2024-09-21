@@ -9,29 +9,33 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import com.example.conversationhelper.R;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class MessageAdapter extends ArrayAdapter<String> {
-    private final Context context;
-    private final ArrayList<String> messages;
-    public MessageAdapter(Context context, ArrayList<String> messages) {
+
+    public MessageAdapter(Context context, List<String> messages) {
         super(context, R.layout.list_item_message, messages);
-        this.context = context;
-        this.messages = messages;
     }
 
+    @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = inflater.inflate(R.layout.list_item_message, parent, false);
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
 
-        TextView messageText = rowView.findViewById(R.id.message_text);
-        messageText.setText(messages.get(position));
+        String text = getItem(position);
+
+        if (convertView == null) {
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_message, parent, false);
+        }
+
+        TextView messageText = convertView.findViewById(R.id.message_text);
+        messageText.setText(text);
 
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) messageText.getLayoutParams();
-        float scale = context.getResources().getDisplayMetrics().density;
+        float scale = getContext().getResources().getDisplayMetrics().density;
         int marginInPx = (int) (50 * scale + 0.5f);
 
         if (position % 2 == 0) {
@@ -45,10 +49,6 @@ public class MessageAdapter extends ArrayAdapter<String> {
         }
 
         messageText.setLayoutParams(params);
-        return rowView;
+        return convertView;
     }
-
-
-
-
 }
