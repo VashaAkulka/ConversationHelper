@@ -85,4 +85,10 @@ public class Database {
         cursor.close();
         return messages;
     }
+
+    public void deleteChatById(int id) {
+        String whereClause = "id = ?";
+        String[] whereArgs = new String[]{String.valueOf(id)};
+        database.delete(DBHelper.CHATS_TABLE, whereClause, whereArgs);
+    }
 }

@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.example.conversationhelper.R;
+import com.example.conversationhelper.db.Database;
 import com.example.conversationhelper.db.model.Chat;
 
 import java.util.List;
@@ -17,8 +18,11 @@ import java.util.Locale;
 
 public class ChatAdapter extends ArrayAdapter<Chat> {
 
+    Database database;
+
     public ChatAdapter(Context context, List<Chat> chats) {
         super(context, R.layout.list_item_chat, chats);
+        database = Database.getInstance(context);
     }
 
     @NonNull
@@ -40,6 +44,14 @@ public class ChatAdapter extends ArrayAdapter<Chat> {
                     chat.getStatus().equals("process") ? "в процессе" : "завершен",
                     chat.getLanguage()));
         }
+
+        convertView.findViewById(R.id.delete_button).setOnClickListener(view -> {
+            if (chat != null) {
+                database.deleteChatById(chat.getId());
+                remove(chat);
+                notifyDataSetChanged();
+            }
+        });
 
         return convertView;
     }
