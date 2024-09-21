@@ -1,4 +1,14 @@
 <resources>
     <string name="app_name">ConversationHelper</string>
     <string name="hint_button_send">Сообщение</string>
+    <string name="continue_button">Приступить</string>
+    <string name="difficulty_label">Сложность</string>
+    <string name="language_label">Язык общения</string>
+    <string name="specification_label">Спецификация</string>
+    <string name="question_count_label">Количество вопросов</string>
+    <string name="russian_language">Русский</string>
+    <string name="english_language">Английский</string>
+    <string name="junior_level">Junior</string>
+    <string name="middle_level">Middle</string>
+    <string name="senior_level">Senior</string>
 </resources>

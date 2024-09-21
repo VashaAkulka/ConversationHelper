@@ -16,7 +16,10 @@
         android:theme="@style/Theme.ConversationHelper"
         tools:targetApi="31">
         <activity
-            android:name=".MessengerActivity"
+            android:name=".SettingChatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ListChatsActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,6 +27,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".MessengerActivity"
+            android:exported="true" />
     </application>
 
 </manifest>

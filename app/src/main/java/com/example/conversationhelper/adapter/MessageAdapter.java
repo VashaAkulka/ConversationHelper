@@ -17,7 +17,7 @@ public class MessageAdapter extends ArrayAdapter<String> {
     private final Context context;
     private final ArrayList<String> messages;
     public MessageAdapter(Context context, ArrayList<String> messages) {
-        super(context, R.layout.list_item, messages);
+        super(context, R.layout.list_item_message, messages);
         this.context = context;
         this.messages = messages;
     }
@@ -25,7 +25,7 @@ public class MessageAdapter extends ArrayAdapter<String> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = inflater.inflate(R.layout.list_item, parent, false);
+        View rowView = inflater.inflate(R.layout.list_item_message, parent, false);
 
         TextView messageText = rowView.findViewById(R.id.message_text);
         messageText.setText(messages.get(position));

@@ -30,12 +30,18 @@ public class MessengerActivity extends AppCompatActivity {
     private EditText editMessage;
     private ListView messageHistory;
     private ActivityResultLauncher<Intent> speechRecognizerLauncher;
+    private Database database;
+    private int chatId;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messenger);
+
+        Intent intent = getIntent();
+        chatId = intent.getIntExtra("CHAT-ID", 0);
+        database = Database.getInstance(getApplicationContext());
 
         messageHistory = findViewById(R.id.message_history);
         editMessage = findViewById(R.id.edit_message);
@@ -54,8 +60,6 @@ public class MessengerActivity extends AppCompatActivity {
                     }
                 }
         );
-
-        Database.getInstance(getApplicationContext());
     }
 
     public void onClickSenderButton(View view) {
@@ -64,6 +68,8 @@ public class MessengerActivity extends AppCompatActivity {
         editMessage.setEnabled(false);
 
         messages.add(message);
+        database.addMessage(message, chatId);
+
         adapter.notifyDataSetChanged();
         messageHistory.setSelection(adapter.getCount() - 1);
 
@@ -71,6 +77,8 @@ public class MessengerActivity extends AppCompatActivity {
             @Override
             public void onSuccess(String result) {
                 messages.add(result);
+                database.addMessage(result, chatId);
+
                 adapter.notifyDataSetChanged();
                 messageHistory.setSelection(adapter.getCount() - 1);
                 editMessage.setEnabled(true);

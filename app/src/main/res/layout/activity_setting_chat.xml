@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SettingChatActivity"
+    android:background="@color/background_color">
+
+    <ImageView
+        android:layout_margin="10dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/baseline_arrow_back_24"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:onClick="onClickComeBack"/>
+
+
+
+    <LinearLayout
+        android:id="@+id/settings"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/round_edit_user_message"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:orientation="vertical"
+        android:padding="25dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/specification_label"
+            android:textColor="@color/text_color"
+            android:layout_marginBottom="8dp" />
+
+        <EditText
+            android:id="@+id/edit_spec"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:layout_marginBottom="16dp"
+            android:textColor="@color/text_color"
+            android:textSize="14sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/question_count_label"
+            android:textColor="@color/text_color"
+            android:layout_marginBottom="8dp" />
+
+        <EditText
+            android:id="@+id/edit_number_question"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:layout_marginBottom="50dp"
+            android:textColor="@color/text_color"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/difficulty_label"
+            android:textColor="@color/text_color"
+            android:layout_marginBottom="8dp"
+            android:layout_gravity="center"/>
+
+        <RadioGroup
+            android:id="@+id/radio_group_diff"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp">
+            <RadioButton
+                android:id="@+id/diff_junior"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/junior_level"
+                android:textColor="@color/text_color" />
+            <RadioButton
+                android:id="@+id/diff_middle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/middle_level"
+                android:textColor="@color/text_color"/>
+            <RadioButton
+                android:id="@+id/diff_senior"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/senior_level"
+                android:textColor="@color/text_color"/>
+        </RadioGroup>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/language_label"
+            android:textColor="@color/text_color"
+            android:layout_marginBottom="8dp"
+            android:layout_gravity="center"/>
+
+        <RadioGroup
+            android:id="@+id/radio_group_language"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <RadioButton
+                android:id="@+id/language_ru"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/russian_language"
+                android:textColor="@color/text_color"/>
+            <RadioButton
+                android:id="@+id/language_en"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/english_language"
+                android:textColor="@color/text_color"/>
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/error_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/error_message"
+            android:layout_gravity="center"/>
+    </LinearLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/message_background_color"
+        android:padding="20dp"
+        android:text="@string/continue_button"
+        android:textColor="@color/text_color"
+        app:cornerRadius="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/settings"
+        android:onClick="onClickContinue"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

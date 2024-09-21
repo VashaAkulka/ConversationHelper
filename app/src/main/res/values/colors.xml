@@ -6,4 +6,5 @@
     <color name="hint_color">#b4b4b4</color>
     <color name="background_color">#212121</color>
     <color name="message_background_color">#2f2f2f</color>
+    <color name="error_message">#CF1010</color>
 </resources>

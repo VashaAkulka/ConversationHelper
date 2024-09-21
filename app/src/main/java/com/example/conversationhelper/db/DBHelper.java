@@ -39,7 +39,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 + KEY_DIFFICULTY + " TEXT, "
                 + KEY_SPECIALIZATION + " TEXT, "
                 + KEY_LANGUAGE + " TEXT, "
-                + KEY_STATUS + " TEXT, "
+                + KEY_STATUS + " TEXT DEFAULT 'process', "
                 + KEY_NUMBER_QUESTIONS + " INTEGER, "
                 + KEY_START_TIME + " DATETIME DEFAULT CURRENT_TIMESTAMP)";
 
