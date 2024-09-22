@@ -7,7 +7,7 @@ import com.example.conversationhelper.BuildConfig;
 import com.google.gson.Gson;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 
@@ -21,10 +21,17 @@ public class ChatGptClient  {
     private static final OkHttpClient client = new OkHttpClient();
     private static final Gson gson = new Gson();
 
-    public static void send(String userMessage, ChatGptCallback callback) {
+    public static void send(List<String> historyMessages, ChatGptCallback callback) {
         Executors.newSingleThreadExecutor().execute(() -> {
-            List<RequestMessage> messages = Collections.singletonList(new RequestMessage("user", userMessage));
-            String jsonBody = gson.toJson(new ChatRequest("gpt-3.5-turbo", messages));
+
+            List<RequestMessage> messages = new ArrayList<>();
+            //messages.add(new RequestMessage("system", "Ты проводишь собеседование"));
+            for (int i = 0; i < historyMessages.size(); i++) {
+                String role = (i % 2 == 0) ? "user" : "assistant";
+                messages.add(new RequestMessage(role, historyMessages.get(i)));
+            }
+
+            String jsonBody = gson.toJson(new ChatRequest("gpt-4-turbo", messages));
 
             Request request = new Request.Builder()
                     .url("https://api.proxyapi.ru/openai/v1/chat/completions")

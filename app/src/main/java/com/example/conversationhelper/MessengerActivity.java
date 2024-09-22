@@ -22,10 +22,11 @@ import com.example.conversationhelper.gpt.ChatGptCallback;
 import com.example.conversationhelper.gpt.ChatGptClient;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MessengerActivity extends AppCompatActivity {
 
-    private ArrayList<String> messages;
+    private List<String> messages;
     private MessageAdapter adapter;
     private EditText editMessage;
     private ListView messageHistory;
@@ -76,7 +77,7 @@ public class MessengerActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
         messageHistory.setSelection(adapter.getCount() - 1);
 
-        ChatGptClient.send(message, new ChatGptCallback() {
+        ChatGptClient.send(messages, new ChatGptCallback() {
             @Override
             public void onSuccess(String result) {
                 messages.add(result);
