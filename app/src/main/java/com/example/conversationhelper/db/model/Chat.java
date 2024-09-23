@@ -5,11 +5,11 @@ public class Chat {
     private String difficulty;
     private String specialization;
     private String language;
-    private String status;
+    private int status;
     private int numberQuestions;
     private String startTime;
 
-    public Chat(int id, String difficulty, String specialization, String language, String status, int numberQuestions, String startTime) {
+    public Chat(int id, String difficulty, String specialization, String language, int status, int numberQuestions, String startTime) {
         this.id = id;
         this.difficulty = difficulty;
         this.specialization = specialization;
@@ -43,11 +43,11 @@ public class Chat {
         this.language = language;
     }
 
-    public String getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 

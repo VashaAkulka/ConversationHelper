@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 
 import com.example.conversationhelper.BuildConfig;
+import com.example.conversationhelper.db.model.Message;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -21,14 +22,13 @@ public class ChatGptClient  {
     private static final OkHttpClient client = new OkHttpClient();
     private static final Gson gson = new Gson();
 
-    public static void send(List<String> historyMessages, ChatGptCallback callback) {
+    public static void send(List<Message> historyMessages, ChatGptCallback callback) {
         Executors.newSingleThreadExecutor().execute(() -> {
 
             List<RequestMessage> messages = new ArrayList<>();
             //messages.add(new RequestMessage("system", "Ты проводишь собеседование"));
             for (int i = 0; i < historyMessages.size(); i++) {
-                String role = (i % 2 == 0) ? "user" : "assistant";
-                messages.add(new RequestMessage(role, historyMessages.get(i)));
+                messages.add(new RequestMessage(historyMessages.get(i).getType(), historyMessages.get(i).getContent()));
             }
 
             String jsonBody = gson.toJson(new ChatRequest("gpt-4-turbo", messages));

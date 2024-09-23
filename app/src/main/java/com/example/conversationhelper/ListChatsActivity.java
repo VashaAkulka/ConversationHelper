@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ListView;
 
 import com.example.conversationhelper.adapter.ChatAdapter;
+import com.example.conversationhelper.auth.Authentication;
 import com.example.conversationhelper.db.Database;
 import com.example.conversationhelper.db.model.Chat;
 
@@ -26,7 +27,7 @@ public class ListChatsActivity extends AppCompatActivity {
 
         database = Database.getInstance(getApplicationContext());
         ListView listChat = findViewById(R.id.list_chat);
-        chatList = database.getAllChats();
+        chatList = database.getAllChatsByUserId(Authentication.getUser().getId());
         adapter = new ChatAdapter(this, chatList);
         listChat.setAdapter(adapter);
 
@@ -49,7 +50,7 @@ public class ListChatsActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         chatList.clear();
-        chatList.addAll(database.getAllChats());
+        chatList.addAll(database.getAllChatsByUserId(Authentication.getUser().getId()));
         adapter.notifyDataSetChanged();
     }
 }

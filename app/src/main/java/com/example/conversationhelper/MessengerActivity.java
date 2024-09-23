@@ -18,6 +18,7 @@ import android.widget.ListView;
 
 import com.example.conversationhelper.adapter.MessageAdapter;
 import com.example.conversationhelper.db.Database;
+import com.example.conversationhelper.db.model.Message;
 import com.example.conversationhelper.gpt.ChatGptCallback;
 import com.example.conversationhelper.gpt.ChatGptClient;
 
@@ -26,7 +27,7 @@ import java.util.List;
 
 public class MessengerActivity extends AppCompatActivity {
 
-    private List<String> messages;
+    private List<Message> messages;
     private MessageAdapter adapter;
     private EditText editMessage;
     private ListView messageHistory;
@@ -67,12 +68,11 @@ public class MessengerActivity extends AppCompatActivity {
     }
 
     public void onClickSenderButton(View view) {
-        String message = editMessage.getText().toString();
-        if (message.equals("")) return;
+        String messageContent = editMessage.getText().toString();
+        if (messageContent.equals("")) return;
         editMessage.setEnabled(false);
 
-        messages.add(message);
-        database.addMessage(message, chatId);
+        messages.add(database.addMessage(messageContent, chatId, "user"));
 
         adapter.notifyDataSetChanged();
         messageHistory.setSelection(adapter.getCount() - 1);
@@ -80,8 +80,7 @@ public class MessengerActivity extends AppCompatActivity {
         ChatGptClient.send(messages, new ChatGptCallback() {
             @Override
             public void onSuccess(String result) {
-                messages.add(result);
-                database.addMessage(result, chatId);
+                messages.add(database.addMessage(result, chatId, "assistant"));
 
                 adapter.notifyDataSetChanged();
                 messageHistory.setSelection(adapter.getCount() - 1);

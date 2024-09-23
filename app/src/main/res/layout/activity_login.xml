@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LoginActivity"
+    android:background="@color/background_color">
+
+    <LinearLayout
+        android:id="@+id/login_form"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/round_edit_user_message"
+        android:orientation="vertical"
+        android:padding="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginBottom="100dp">
+
+        <EditText
+            android:id="@+id/edit_user_name_log"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_button_user_name"
+            android:textColorHint="@color/hint_color"
+            android:layout_marginBottom="20dp"
+            android:textColor="@color/text_color"
+            android:inputType="text"
+            android:autofillHints="username"/>
+        <EditText
+            android:id="@+id/edit_user_password_log"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:hint="@string/hint_button_user_password"
+            android:textColorHint="@color/hint_color"
+            android:textColor="@color/text_color"
+            android:autofillHints="password"/>
+
+        <TextView
+            android:id="@+id/error_text_login_form"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/error_message"
+            android:layout_gravity="center"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/text_view_login_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/login_form"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="@string/text_view_registration_button"
+        android:layout_marginTop="20dp"
+        android:textColor="@color/hint_color"
+        android:onClick="onClickGoToRegistration"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/message_background_color"
+        android:padding="20dp"
+        android:text="@string/login_button"
+        android:textColor="@color/text_color"
+        app:cornerRadius="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/login_form"
+        android:onClick="onClickLogin"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

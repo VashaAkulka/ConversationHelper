@@ -1,7 +1,15 @@
 <resources>
     <string name="app_name">ConversationHelper</string>
     <string name="hint_button_send">Сообщение</string>
+    <string name="hint_button_user_name">Имя</string>
+    <string name="hint_button_user_password">Пароль</string>
+    <string name="hint_button_user_password_repeat">Повторите пароль</string>
+    <string name="hint_button_user_email">Электронная почта</string>
     <string name="continue_button">Приступить</string>
+    <string name="text_view_registration_button">Регистрация</string>
+    <string name="text_view_login_button">Есть аккаунт?</string>
+    <string name="registration_button">Зарегестрироваться</string>
+    <string name="login_button">Войти</string>
     <string name="difficulty_label">Сложность</string>
     <string name="language_label">Язык общения</string>
     <string name="specification_label">Спецификация</string>

@@ -41,7 +41,7 @@ public class ChatAdapter extends ArrayAdapter<Chat> {
             name.setText(String.format("%s %s", chat.getDifficulty(), chat.getSpecialization()));
             description.setText(String.format(Locale.getDefault(), "Количество вопросов: %d\nСтатус: %s\nЯзык общения: %s",
                     chat.getNumberQuestions(),
-                    chat.getStatus().equals("process") ? "в процессе" : "завершен",
+                    chat.getStatus() == 0 ? "в процессе" : "завершен",
                     chat.getLanguage()));
         }
 

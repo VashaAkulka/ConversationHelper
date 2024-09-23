@@ -10,6 +10,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.example.conversationhelper.auth.Authentication;
 import com.example.conversationhelper.db.Database;
 
 public class SettingChatActivity extends AppCompatActivity {
@@ -45,7 +46,7 @@ public class SettingChatActivity extends AppCompatActivity {
         Intent intent = new Intent(SettingChatActivity.this, MessengerActivity.class);
         Database database = Database.getInstance(getApplicationContext());
 
-        intent.putExtra("CHAT-ID", database.addChat(diff,spec,language,Integer.parseInt(questions)));
+        intent.putExtra("CHAT-ID", database.addChat(diff,spec,language,Integer.parseInt(questions), Authentication.getUser().getId()).getId());
 
         startActivity(intent);
         finish();
