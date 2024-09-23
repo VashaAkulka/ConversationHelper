@@ -1,5 +1,7 @@
 package com.example.conversationhelper;
 
+import static com.example.conversationhelper.db.repository.UserRepository.getInstance;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -9,13 +11,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.conversationhelper.auth.Authentication;
-import com.example.conversationhelper.db.Database;
 import com.example.conversationhelper.db.model.User;
+import com.example.conversationhelper.db.repository.UserRepository;
 
 import java.util.regex.Pattern;
 
 public class RegistrationActivity extends AppCompatActivity {
-    Database database;
+    UserRepository userRepository;
     EditText editName;
     EditText editPassword;
     EditText editPasswordRepeat;
@@ -27,7 +29,7 @@ public class RegistrationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
 
-        database = Database.getInstance(getApplicationContext());
+        userRepository = getInstance(getApplicationContext());
 
         editName = findViewById(R.id.edit_user_name_reg);
         editPassword = findViewById(R.id.edit_user_password_reg);
@@ -63,14 +65,14 @@ public class RegistrationActivity extends AppCompatActivity {
             return;
         }
 
-        User user = database.getUserByName(name);
+        User user = userRepository.getUserByName(name);
         if (user != null) {
             error.setText("Такой пользователь уже существует");
             return;
         }
 
-        database.addUser(name, email, password);
-        Authentication.setUser(database.getUserByName(name));
+        userRepository.addUser(name, email, password);
+        Authentication.setUser(userRepository.getUserByName(name));
         Intent intent = new Intent(RegistrationActivity.this, ListChatsActivity.class);
         startActivity(intent);
         finish();

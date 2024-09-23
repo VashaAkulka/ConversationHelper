@@ -1,5 +1,7 @@
 package com.example.conversationhelper;
 
+import static com.example.conversationhelper.db.repository.ChatRepository.getInstance;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -11,7 +13,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.example.conversationhelper.auth.Authentication;
-import com.example.conversationhelper.db.Database;
+import com.example.conversationhelper.db.repository.ChatRepository;
 
 public class SettingChatActivity extends AppCompatActivity {
 
@@ -44,9 +46,9 @@ public class SettingChatActivity extends AppCompatActivity {
         String language = ((RadioButton)findViewById(checkedIdLanguage)).getText().toString();
 
         Intent intent = new Intent(SettingChatActivity.this, MessengerActivity.class);
-        Database database = Database.getInstance(getApplicationContext());
+        ChatRepository chatRepository = getInstance(getApplicationContext());
 
-        intent.putExtra("CHAT-ID", database.addChat(diff,spec,language,Integer.parseInt(questions), Authentication.getUser().getId()).getId());
+        intent.putExtra("CHAT-ID", chatRepository.addChat(diff,spec,language,Integer.parseInt(questions), Authentication.getUser().getId()).getId());
 
         startActivity(intent);
         finish();

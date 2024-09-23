@@ -1,5 +1,7 @@
 package com.example.conversationhelper.adapter;
 
+import static com.example.conversationhelper.db.repository.ChatRepository.getInstance;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,19 +12,19 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.example.conversationhelper.R;
-import com.example.conversationhelper.db.Database;
 import com.example.conversationhelper.db.model.Chat;
+import com.example.conversationhelper.db.repository.ChatRepository;
 
 import java.util.List;
 import java.util.Locale;
 
 public class ChatAdapter extends ArrayAdapter<Chat> {
 
-    Database database;
+    ChatRepository chatRepository;
 
     public ChatAdapter(Context context, List<Chat> chats) {
         super(context, R.layout.list_item_chat, chats);
-        database = Database.getInstance(context);
+        chatRepository = getInstance(context);
     }
 
     @NonNull
@@ -47,7 +49,7 @@ public class ChatAdapter extends ArrayAdapter<Chat> {
 
         convertView.findViewById(R.id.delete_button).setOnClickListener(view -> {
             if (chat != null) {
-                database.deleteChatById(chat.getId());
+                chatRepository.deleteChatById(chat.getId());
                 remove(chat);
                 notifyDataSetChanged();
             }

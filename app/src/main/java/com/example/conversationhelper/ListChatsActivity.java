@@ -1,5 +1,7 @@
 package com.example.conversationhelper;
 
+import static com.example.conversationhelper.db.repository.ChatRepository.getInstance;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -9,14 +11,14 @@ import android.widget.ListView;
 
 import com.example.conversationhelper.adapter.ChatAdapter;
 import com.example.conversationhelper.auth.Authentication;
-import com.example.conversationhelper.db.Database;
 import com.example.conversationhelper.db.model.Chat;
+import com.example.conversationhelper.db.repository.ChatRepository;
 
 import java.util.List;
 
 public class ListChatsActivity extends AppCompatActivity {
 
-    private Database database;
+    private ChatRepository chatRepository;
     ChatAdapter adapter;
     List<Chat> chatList;
 
@@ -25,9 +27,9 @@ public class ListChatsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_chats);
 
-        database = Database.getInstance(getApplicationContext());
+        chatRepository = getInstance(getApplicationContext());
         ListView listChat = findViewById(R.id.list_chat);
-        chatList = database.getAllChatsByUserId(Authentication.getUser().getId());
+        chatList = chatRepository.getAllChatsByUserId(Authentication.getUser().getId());
         adapter = new ChatAdapter(this, chatList);
         listChat.setAdapter(adapter);
 
@@ -50,7 +52,7 @@ public class ListChatsActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         chatList.clear();
-        chatList.addAll(database.getAllChatsByUserId(Authentication.getUser().getId()));
+        chatList.addAll(chatRepository.getAllChatsByUserId(Authentication.getUser().getId()));
         adapter.notifyDataSetChanged();
     }
 }

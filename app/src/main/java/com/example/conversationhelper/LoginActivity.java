@@ -1,5 +1,7 @@
 package com.example.conversationhelper;
 
+import static com.example.conversationhelper.db.repository.UserRepository.getInstance;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -9,12 +11,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.conversationhelper.auth.Authentication;
-import com.example.conversationhelper.db.Database;
 import com.example.conversationhelper.db.model.User;
+import com.example.conversationhelper.db.repository.UserRepository;
 
 public class LoginActivity extends AppCompatActivity {
 
-    Database database;
+    UserRepository userRepository;
     EditText editName;
     EditText editPassword;
     TextView error;
@@ -24,7 +26,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        database = Database.getInstance(getApplicationContext());
+        userRepository = getInstance(getApplicationContext());
 
         editName = findViewById(R.id.edit_user_name_log);
         editPassword = findViewById(R.id.edit_user_password_log);
@@ -40,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        User user = database.getUserByName(name);
+        User user = userRepository.getUserByName(name);
         if (user == null || !user.getPassword().equals(password)) {
             error.setText("Имя или пароль неправильные");
             return;
