@@ -60,7 +60,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 + KEY_NAME + " TEXT, "
                 + KEY_EMAIL + " TEXT, "
                 + KEY_PASSWORD + " TEXT, "
-                + KEY_AVATAR + " TEXT DEFAULT 'no', "
+                + KEY_AVATAR + " BLOB DEFAULT NULL, "
                 + KEY_ROLE + " TEXT DEFAULT 'user')";
 
         String CREATE_CHATS_TABLE = "CREATE TABLE " + CHATS_TABLE + " ("

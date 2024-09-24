@@ -1,0 +1,7 @@
+<resources>
+    <style name="CustomAlertDialogTheme" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="colorPrimary">@color/hint_color</item>
+        <item name="android:textColorPrimary">@color/hint_color</item>
+        <item name="android:background">@color/message_background_color</item>
+    </style>
+</resources>

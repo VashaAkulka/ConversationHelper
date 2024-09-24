@@ -55,4 +55,12 @@ public class ListChatsActivity extends AppCompatActivity {
         chatList.addAll(chatRepository.getAllChatsByUserId(Authentication.getUser().getId()));
         adapter.notifyDataSetChanged();
     }
+
+    public void onClickToProfile(View view) {
+        Intent intent = new Intent(ListChatsActivity.this, ProfileActivity.class);
+        startActivity(intent);
+    }
+
+    public void onClickToArticle(View view) {
+    }
 }

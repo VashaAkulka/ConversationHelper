@@ -29,7 +29,7 @@ public class UserRepository extends BaseRepository {
         values.put(DBHelper.KEY_PASSWORD, password);
 
         int id = (int)database.insert(DBHelper.USER_TABLE, null, values);
-        return new User(id, "user", name, password, email, "no");
+        return new User(id, "user", name, password, email, null);
     }
 
     public User getUserByName(String name) {
@@ -43,11 +43,11 @@ public class UserRepository extends BaseRepository {
             if (cursor.moveToFirst()) {
                 User user = new User(
                         cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.KEY_ID)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.KEY_ROLE)),
                         cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.KEY_NAME)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.KEY_EMAIL)),
                         cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.KEY_PASSWORD)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.KEY_AVATAR)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.KEY_ROLE))
+                        cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.KEY_EMAIL)),
+                        cursor.getBlob(cursor.getColumnIndexOrThrow(DBHelper.KEY_AVATAR))
                 );
                 cursor.close();
                 return user;
@@ -56,5 +56,21 @@ public class UserRepository extends BaseRepository {
         }
 
         return null;
+    }
+
+    public void updateUser(User user) {
+        ContentValues values = new ContentValues();
+
+        values.put(DBHelper.KEY_NAME, user.getName());
+        values.put(DBHelper.KEY_EMAIL, user.getEmail());
+        values.put(DBHelper.KEY_PASSWORD, user.getPassword());
+        values.put(DBHelper.KEY_AVATAR, user.getAvatar());
+        values.put(DBHelper.KEY_ROLE, user.getRole());
+
+        database.update(DBHelper.USER_TABLE, values, "id = ?", new String[]{String.valueOf(user.getId())});
+    }
+
+    public void deleteUserById(int id) {
+        database.delete(DBHelper.USER_TABLE, "id = ?", new String[]{String.valueOf(id)});
     }
 }

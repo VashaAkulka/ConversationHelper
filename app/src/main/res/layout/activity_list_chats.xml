@@ -22,6 +22,20 @@
         android:layout_marginBottom="30dp"/>
 
     <ImageButton
+        android:id="@+id/article_button"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:adjustViewBounds="true"
+        android:background="@drawable/round_button_message_controll"
+        android:onClick="onClickToArticle"
+        android:scaleType="fitXY"
+        android:src="@drawable/baseline_article_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/add_button"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <ImageButton
         android:id="@+id/add_button"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
@@ -32,6 +46,20 @@
         android:scaleType="fitXY"
         android:src="@drawable/baseline_add_24"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <ImageButton
+        android:id="@+id/profile_button"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:adjustViewBounds="true"
+        android:background="@drawable/round_button_message_controll"
+        android:onClick="onClickToProfile"
+        android:scaleType="fitXY"
+        android:src="@drawable/baseline_person_24"
+        app:layout_constraintStart_toEndOf="@id/add_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
 

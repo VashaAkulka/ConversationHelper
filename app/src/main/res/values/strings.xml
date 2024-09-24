@@ -19,4 +19,10 @@
     <string name="junior_level">Junior</string>
     <string name="middle_level">Middle</string>
     <string name="senior_level">Senior</string>
+    <string name="change_profile_data">Смена личных данных</string>
+    <string name="change_profile_account">Смена аккаунта</string>
+    <string name="delete_profile">Удаление аккаунта</string>
+    <string name="dialog_label_name">Имя:</string>
+    <string name="dialog_label_email">Почта:</string>
+    <string name="dialog_label_password">Пароль:</string>
 </resources>

@@ -39,25 +39,32 @@ public class MessageAdapter extends ArrayAdapter<Message> {
             }
 
             TextView messageText = convertView.findViewById(R.id.message_text);
+            TextView messageTime = convertView.findViewById(R.id.message_time);
             messageText.setText(text);
+            messageTime.setText(TimeStampConvertor.getHoursAndMinuets(message.getCreateTime()));
 
-            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) messageText.getLayoutParams();
+            LinearLayout.LayoutParams textParams = (LinearLayout.LayoutParams) messageText.getLayoutParams();
+            LinearLayout.LayoutParams timeParams = (LinearLayout.LayoutParams) messageTime.getLayoutParams();
+
             float scale = getContext().getResources().getDisplayMetrics().density;
             int marginInPx = (int) (50 * scale + 0.5f);
 
             if (message.getType().equals("user")) {
-                params.gravity = Gravity.START;
-                params.setMargins(0, 0, marginInPx, 0);
+                textParams.gravity = Gravity.START;
+                textParams.setMargins(0, 0, marginInPx, 0);
                 messageText.setBackgroundResource(R.drawable.round_user_message);
-                ((TextView)convertView.findViewById(R.id.time_right)).setText(TimeStampConvertor.getHoursAndMinuets(message.getCreateTime()));
+
+                timeParams.gravity = Gravity.START;
             } else {
-                params.gravity = Gravity.END;
-                params.setMargins(marginInPx, 0, 0, 0);
+                textParams.gravity = Gravity.END;
+                textParams.setMargins(marginInPx, 0, 0, 0);
                 messageText.setBackgroundResource(R.drawable.round_chatgpt_message);
-                ((TextView)convertView.findViewById(R.id.time_left)).setText(TimeStampConvertor.getHoursAndMinuets(message.getCreateTime()));
+
+                timeParams.gravity = Gravity.END;
             }
 
-            messageText.setLayoutParams(params);
+            messageText.setLayoutParams(textParams);
+            messageTime.setLayoutParams(timeParams);
         }
 
         return convertView;

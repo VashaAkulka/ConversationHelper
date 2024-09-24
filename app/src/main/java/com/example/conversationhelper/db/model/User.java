@@ -8,9 +8,9 @@ public class User implements Serializable {
     private String name;
     private String password;
     private String email;
-    private String avatar;
+    private byte[] avatar;
 
-    public User(int id, String role, String name, String password, String email, String avatar) {
+    public User(int id, String role, String name, String password, String email, byte[] avatar) {
         this.id = id;
         this.role = role;
         this.name = name;
@@ -51,11 +51,11 @@ public class User implements Serializable {
         this.email = email;
     }
 
-    public String getAvatar() {
+    public byte[] getAvatar() {
         return avatar;
     }
 
-    public void setAvatar(String avatar) {
+    public void setAvatar(byte[] avatar) {
         this.avatar = avatar;
     }
 
