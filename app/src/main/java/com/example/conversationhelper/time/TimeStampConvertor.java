@@ -10,4 +10,8 @@ public class TimeStampConvertor {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         return sdf.format(new Date());
     }
+
+    static public String getHoursAndMinuets(String time) {
+        return time.substring(11, 16);
+    }
 }

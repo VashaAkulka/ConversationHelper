@@ -37,7 +37,7 @@ public class ListChatsActivity extends AppCompatActivity {
             Chat selectedChat = adapter.getItem(i);
             if (selectedChat != null) {
                 Intent intent = new Intent(ListChatsActivity.this, MessengerActivity.class);
-                intent.putExtra("CHAT-ID", selectedChat.getId());
+                intent.putExtra("CHAT", selectedChat);
                 startActivity(intent);
             }
         });

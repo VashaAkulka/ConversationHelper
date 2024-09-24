@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 
 import com.example.conversationhelper.R;
 import com.example.conversationhelper.db.model.Message;
+import com.example.conversationhelper.time.TimeStampConvertor;
 
 import java.util.List;
 
@@ -48,10 +49,12 @@ public class MessageAdapter extends ArrayAdapter<Message> {
                 params.gravity = Gravity.START;
                 params.setMargins(0, 0, marginInPx, 0);
                 messageText.setBackgroundResource(R.drawable.round_user_message);
+                ((TextView)convertView.findViewById(R.id.time_right)).setText(TimeStampConvertor.getHoursAndMinuets(message.getCreateTime()));
             } else {
                 params.gravity = Gravity.END;
                 params.setMargins(marginInPx, 0, 0, 0);
                 messageText.setBackgroundResource(R.drawable.round_chatgpt_message);
+                ((TextView)convertView.findViewById(R.id.time_left)).setText(TimeStampConvertor.getHoursAndMinuets(message.getCreateTime()));
             }
 
             messageText.setLayoutParams(params);

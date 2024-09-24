@@ -71,8 +71,7 @@ public class RegistrationActivity extends AppCompatActivity {
             return;
         }
 
-        userRepository.addUser(name, email, password);
-        Authentication.setUser(userRepository.getUserByName(name));
+        Authentication.setUser(userRepository.addUser(name, email, password));
         Intent intent = new Intent(RegistrationActivity.this, ListChatsActivity.class);
         startActivity(intent);
         finish();

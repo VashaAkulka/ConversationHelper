@@ -12,7 +12,7 @@
     <string name="login_button">Войти</string>
     <string name="difficulty_label">Сложность</string>
     <string name="language_label">Язык общения</string>
-    <string name="specification_label">Спецификация</string>
+    <string name="specialization_label">Специализация</string>
     <string name="question_count_label">Количество вопросов</string>
     <string name="russian_language">Русский</string>
     <string name="english_language">Английский</string>

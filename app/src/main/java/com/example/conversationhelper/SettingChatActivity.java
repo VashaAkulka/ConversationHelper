@@ -48,7 +48,7 @@ public class SettingChatActivity extends AppCompatActivity {
         Intent intent = new Intent(SettingChatActivity.this, MessengerActivity.class);
         ChatRepository chatRepository = getInstance(getApplicationContext());
 
-        intent.putExtra("CHAT-ID", chatRepository.addChat(diff,spec,language,Integer.parseInt(questions), Authentication.getUser().getId()).getId());
+        intent.putExtra("CHAT", chatRepository.addChat(diff, spec, language, Integer.parseInt(questions), Authentication.getUser().getId()));
 
         startActivity(intent);
         finish();

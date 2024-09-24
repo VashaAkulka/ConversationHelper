@@ -1,6 +1,8 @@
 package com.example.conversationhelper.db.model;
 
-public class Chat {
+import java.io.Serializable;
+
+public class Chat implements Serializable {
     private int id;
     private String difficulty;
     private String specialization;

@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.example.conversationhelper.adapter.MessageAdapter;
+import com.example.conversationhelper.db.model.Chat;
 import com.example.conversationhelper.db.model.Message;
 import com.example.conversationhelper.db.repository.MessageRepository;
 import com.example.conversationhelper.gpt.ChatGptCallback;
@@ -35,7 +36,7 @@ public class MessengerActivity extends AppCompatActivity {
     private ListView messageHistory;
     private ActivityResultLauncher<Intent> speechRecognizerLauncher;
     private MessageRepository messageRepository;
-    private int chatId;
+    private Chat chat;
 
 
     @Override
@@ -44,14 +45,14 @@ public class MessengerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_messenger);
 
         Intent intent = getIntent();
-        chatId = intent.getIntExtra("CHAT-ID", 0);
+        chat = (Chat) intent.getSerializableExtra("CHAT");
         messageRepository = getInstance(getApplicationContext());
 
         messageHistory = findViewById(R.id.message_history);
         editMessage = findViewById(R.id.edit_message);
 
         messages = new ArrayList<>();
-        messages.addAll(messageRepository.getMessageByChatId(chatId));
+        messages.addAll(messageRepository.getMessageByChatId(chat.getId()));
         adapter = new MessageAdapter(this, messages);
         messageHistory.setAdapter(adapter);
 
@@ -74,7 +75,7 @@ public class MessengerActivity extends AppCompatActivity {
         if (messageContent.equals("")) return;
         editMessage.setEnabled(false);
 
-        messages.add(messageRepository.addMessage(messageContent, chatId, "user"));
+        messages.add(messageRepository.addMessage(messageContent, chat.getId(), "user"));
 
         adapter.notifyDataSetChanged();
         messageHistory.setSelection(adapter.getCount() - 1);
@@ -82,7 +83,7 @@ public class MessengerActivity extends AppCompatActivity {
         ChatGptClient.send(messages, new ChatGptCallback() {
             @Override
             public void onSuccess(String result) {
-                messages.add(messageRepository.addMessage(result, chatId, "assistant"));
+                messages.add(messageRepository.addMessage(result, chat.getId(), "assistant"));
 
                 adapter.notifyDataSetChanged();
                 messageHistory.setSelection(adapter.getCount() - 1);

@@ -31,13 +31,6 @@
         android:orientation="vertical"
         android:padding="25dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/specification_label"
-            android:textColor="@color/text_color"
-            android:layout_marginBottom="8dp" />
-
         <EditText
             android:id="@+id/edit_spec"
             android:layout_width="match_parent"
@@ -45,23 +38,22 @@
             android:inputType="text"
             android:layout_marginBottom="16dp"
             android:textColor="@color/text_color"
-            android:textSize="14sp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/question_count_label"
-            android:textColor="@color/text_color"
-            android:layout_marginBottom="8dp" />
+            android:textSize="14sp"
+            android:hint="@string/specialization_label"
+            android:textColorHint="@color/hint_color"
+            android:autofillHints="username"/>
 
         <EditText
             android:id="@+id/edit_number_question"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="number"
-            android:layout_marginBottom="50dp"
+            android:layout_marginBottom="35dp"
             android:textColor="@color/text_color"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:hint="@string/question_count_label"
+            android:textColorHint="@color/hint_color"
+            android:autofillHints="username"/>
 
         <TextView
             android:layout_width="wrap_content"
