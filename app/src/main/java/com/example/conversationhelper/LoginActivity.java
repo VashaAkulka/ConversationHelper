@@ -1,7 +1,5 @@
 package com.example.conversationhelper;
 
-import static com.example.conversationhelper.db.repository.UserRepository.getInstance;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -11,22 +9,22 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.conversationhelper.auth.Authentication;
-import com.example.conversationhelper.db.model.User;
 import com.example.conversationhelper.db.repository.UserRepository;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginActivity extends AppCompatActivity {
 
-    UserRepository userRepository;
-    EditText editName;
-    EditText editPassword;
-    TextView error;
+    private UserRepository userRepository;
+    private EditText editName;
+    private EditText editPassword;
+    private TextView error;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        userRepository = getInstance(getApplicationContext());
+        userRepository = new UserRepository(FirebaseFirestore.getInstance());
 
         editName = findViewById(R.id.edit_user_name_log);
         editPassword = findViewById(R.id.edit_user_password_log);
@@ -42,16 +40,18 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        User user = userRepository.getUserByName(name);
-        if (user == null || !user.getPassword().equals(password)) {
-            error.setText("Имя или пароль неправильные");
-            return;
-        }
+        userRepository.getUserByName(name)
+                .thenAccept(user -> {
+                    if (user == null || !user.getPassword().equals(password)) {
+                        error.setText("Имя или пароль неправильные");
+                        return;
+                    }
 
-        Authentication.setUser(user);
-        Intent intent = new Intent(LoginActivity.this, ListChatsActivity.class);
-        startActivity(intent);
-        finish();
+                    Authentication.setUser(user);
+                    Intent intent = new Intent(LoginActivity.this, ListChatsActivity.class);
+                    startActivity(intent);
+                    finish();
+                });
     }
 
     public void onClickGoToRegistration(View view) {

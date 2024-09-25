@@ -1,7 +1,5 @@
 package com.example.conversationhelper;
 
-import static com.example.conversationhelper.db.repository.ChatRepository.getInstance;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -13,25 +11,31 @@ import com.example.conversationhelper.adapter.ChatAdapter;
 import com.example.conversationhelper.auth.Authentication;
 import com.example.conversationhelper.db.model.Chat;
 import com.example.conversationhelper.db.repository.ChatRepository;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ListChatsActivity extends AppCompatActivity {
 
     private ChatRepository chatRepository;
-    ChatAdapter adapter;
-    List<Chat> chatList;
+    private ChatAdapter adapter;
+    private List<Chat> chatList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_chats);
 
-        chatRepository = getInstance(getApplicationContext());
+        chatRepository = new ChatRepository(FirebaseFirestore.getInstance());
         ListView listChat = findViewById(R.id.list_chat);
-        chatList = chatRepository.getAllChatsByUserId(Authentication.getUser().getId());
-        adapter = new ChatAdapter(this, chatList);
-        listChat.setAdapter(adapter);
+
+        chatRepository.getAllChatsByUserId(Authentication.getUser().getId())
+                .thenAccept(list -> {
+                    adapter = new ChatAdapter(this, chatList);
+                    listChat.setAdapter(adapter);
+                });
+
 
         listChat.setOnItemClickListener((adapterView, view, i, l) -> {
             Chat selectedChat = adapter.getItem(i);
@@ -52,8 +56,12 @@ public class ListChatsActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         chatList.clear();
-        chatList.addAll(chatRepository.getAllChatsByUserId(Authentication.getUser().getId()));
-        adapter.notifyDataSetChanged();
+
+        chatRepository.getAllChatsByUserId(Authentication.getUser().getId())
+                        .thenAccept(list -> {
+                            chatList.addAll(list);
+                            adapter.notifyDataSetChanged();
+                        });
     }
 
     public void onClickToProfile(View view) {

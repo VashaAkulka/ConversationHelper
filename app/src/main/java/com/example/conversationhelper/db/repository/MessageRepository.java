@@ -1,61 +1,50 @@
 package com.example.conversationhelper.db.repository;
 
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-
-import com.example.conversationhelper.db.DBHelper;
+import com.example.conversationhelper.db.model.Chat;
 import com.example.conversationhelper.db.model.Message;
 import com.example.conversationhelper.time.TimeStampConvertor;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-public class MessageRepository extends BaseRepository {
-    private static MessageRepository instance;
+public class MessageRepository {
+    private final CollectionReference messageCollection;
 
-    private MessageRepository(Context context) {
-        super(context.getApplicationContext());
+    public MessageRepository(FirebaseFirestore db) {
+        this.messageCollection = db.collection("messages");
     }
 
-    public static synchronized MessageRepository getInstance(Context context) {
-        if (instance == null) {
-            instance = new MessageRepository(context);
-        }
-        return instance;
-    }
-
-    public Message addMessage(String content, int chatId, String type) {
-        ContentValues values = new ContentValues();
-        values.put(DBHelper.KEY_CONTENT, content);
-        values.put(DBHelper.KEY_CHAT_ID, chatId);
-        values.put(DBHelper.KEY_TYPE, type);
-
-        database.insert(DBHelper.MESSAGES_TABLE, null, values);
+    public Message addMessage(String content, Chat chat, String type) {
+        String messageId = messageCollection.document().getId();
         String createTime = TimeStampConvertor.getCurrentTimestamp();
-        return new Message(content, type, createTime);
+
+        Message message = new Message(messageId, content, type, createTime, chat);
+        messageCollection.document(messageId).set(message);
+
+        return message;
     }
 
-    public List<Message> getMessageByChatId(int chatId) {
-        List<Message> messages = new ArrayList<>();
+    public CompletableFuture<List<Message>> getMessageByChatId(String chatId) {
+        CompletableFuture<List<Message>> future = new CompletableFuture<>();
+        List<Message> messageList = new ArrayList<>();
 
-        String selection = DBHelper.KEY_CHAT_ID + " = ?";
-        String[] selectionArgs = { String.valueOf(chatId) };
+        messageCollection.get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Message message = document.toObject(Message.class);
+                            if (message.getChat().getId().equals(chatId)) {
+                                messageList.add(message);
+                            }
+                        }
+                        future.complete(messageList);
+                    };
+                });
 
-        Cursor cursor = database.query(DBHelper.MESSAGES_TABLE, null, selection, selectionArgs, null, null, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                String content = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.KEY_CONTENT));
-                String type = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.KEY_TYPE));
-                String createTime = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.KEY_CREATE_TIME));
-
-                Message message = new Message(content, type, createTime);
-                messages.add(message);
-            } while (cursor.moveToNext());
-        }
-
-        cursor.close();
-        return messages;
+        return future;
     }
 }

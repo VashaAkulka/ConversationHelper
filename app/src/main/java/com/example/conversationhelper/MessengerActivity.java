@@ -1,6 +1,5 @@
 package com.example.conversationhelper;
 
-import static com.example.conversationhelper.db.repository.MessageRepository.getInstance;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -24,6 +23,7 @@ import com.example.conversationhelper.db.model.Message;
 import com.example.conversationhelper.db.repository.MessageRepository;
 import com.example.conversationhelper.gpt.ChatGptCallback;
 import com.example.conversationhelper.gpt.ChatGptClient;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,16 +46,18 @@ public class MessengerActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         chat = (Chat) intent.getSerializableExtra("CHAT");
-        messageRepository = getInstance(getApplicationContext());
+        messageRepository = new MessageRepository(FirebaseFirestore.getInstance());
 
         messageHistory = findViewById(R.id.message_history);
         editMessage = findViewById(R.id.edit_message);
 
         messages = new ArrayList<>();
-        messages.addAll(messageRepository.getMessageByChatId(chat.getId()));
-        adapter = new MessageAdapter(this, messages);
-        messageHistory.setAdapter(adapter);
-
+        messageRepository.getMessageByChatId(chat.getId())
+                        .thenAccept(list -> {
+                            messages.addAll(list);
+                            adapter = new MessageAdapter(this, messages);
+                            messageHistory.setAdapter(adapter);
+                        });
 
         speechRecognizerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -74,8 +76,9 @@ public class MessengerActivity extends AppCompatActivity {
         String messageContent = editMessage.getText().toString();
         if (messageContent.equals("")) return;
         editMessage.setEnabled(false);
+        editMessage.setText("");
 
-        messages.add(messageRepository.addMessage(messageContent, chat.getId(), "user"));
+        messages.add(messageRepository.addMessage(messageContent, chat, "user"));
 
         adapter.notifyDataSetChanged();
         messageHistory.setSelection(adapter.getCount() - 1);
@@ -83,7 +86,7 @@ public class MessengerActivity extends AppCompatActivity {
         ChatGptClient.send(messages, new ChatGptCallback() {
             @Override
             public void onSuccess(String result) {
-                messages.add(messageRepository.addMessage(result, chat.getId(), "assistant"));
+                messages.add(messageRepository.addMessage(result, chat, "assistant"));
 
                 adapter.notifyDataSetChanged();
                 messageHistory.setSelection(adapter.getCount() - 1);
@@ -95,8 +98,6 @@ public class MessengerActivity extends AppCompatActivity {
                 throw new RuntimeException(e.getCause());
             }
         });
-
-        editMessage.setText("");
     }
 
     public void onClickSpeechButton(View view) {

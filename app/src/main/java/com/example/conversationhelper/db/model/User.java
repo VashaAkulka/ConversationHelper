@@ -3,20 +3,23 @@ package com.example.conversationhelper.db.model;
 import java.io.Serializable;
 
 public class User implements Serializable {
-    private int id;
+    private String id;
     private String role;
     private String name;
     private String password;
     private String email;
-    private byte[] avatar;
+    private String avatar;
 
-    public User(int id, String role, String name, String password, String email, byte[] avatar) {
+    public User(String id, String role, String name, String password, String email, String avatar) {
         this.id = id;
         this.role = role;
         this.name = name;
         this.password = password;
         this.email = email;
         this.avatar = avatar;
+    }
+
+    public User() {
     }
 
     public String getRole() {
@@ -51,19 +54,19 @@ public class User implements Serializable {
         this.email = email;
     }
 
-    public byte[] getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(byte[] avatar) {
-        this.avatar = avatar;
-    }
-
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }

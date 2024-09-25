@@ -1,74 +1,56 @@
 package com.example.conversationhelper.db.repository;
 
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
 
-import com.example.conversationhelper.db.DBHelper;
 import com.example.conversationhelper.db.model.Chat;
+import com.example.conversationhelper.db.model.User;
 import com.example.conversationhelper.time.TimeStampConvertor;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-public class ChatRepository extends BaseRepository {
-    private static ChatRepository instance;
+public class ChatRepository {
+    private final CollectionReference chatCollection;
 
-    private ChatRepository(Context context) {
-        super(context.getApplicationContext());
+    public ChatRepository(FirebaseFirestore db) {
+        this.chatCollection = db.collection("chats");
     }
 
-    public static synchronized ChatRepository getInstance(Context context) {
-        if (instance == null) {
-            instance = new ChatRepository(context);
-        }
-        return instance;
-    }
-
-    public Chat addChat(String difficulty, String specialization, String language, int numberQuestions, int userId) {
-        ContentValues values = new ContentValues();
-        values.put(DBHelper.KEY_DIFFICULTY, difficulty);
-        values.put(DBHelper.KEY_SPECIALIZATION, specialization);
-        values.put(DBHelper.KEY_LANGUAGE, language);
-        values.put(DBHelper.KEY_NUMBER_QUESTIONS, numberQuestions);
-        values.put(DBHelper.KEY_USER_ID, userId);
-
+    public Chat addChat(String difficulty, String specialization, String language, int numberQuestions, User user) {
+        String chatId = chatCollection.document().getId();
         String createTime = TimeStampConvertor.getCurrentTimestamp();
-        int id = (int)database.insert(DBHelper.CHATS_TABLE, null, values);
-        return new Chat(id, difficulty, specialization, language, 0, numberQuestions, createTime);
+
+        Chat chat = new Chat(chatId, difficulty, specialization, language, 0, numberQuestions, createTime, user);
+        chatCollection.document(chatId).set(chat);
+
+        return chat;
     }
 
-    public List<Chat> getAllChatsByUserId(int userId) {
+    public CompletableFuture<List<Chat>> getAllChatsByUserId(String userId) {
+        CompletableFuture<List<Chat>> future = new CompletableFuture<>();
         List<Chat> chatList = new ArrayList<>();
 
-        String selection = DBHelper.KEY_USER_ID + " = ?";
-        String[] selectionArgs = { String.valueOf(userId) };
+        chatCollection.get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Chat chat = document.toObject(Chat.class);
+                            if (chat.getUser().getId().equals(userId)) {
+                                chatList.add(chat);
+                            }
+                        }
+                        future.complete(chatList);
+                    };
+                });
 
-        Cursor cursor = database.query(DBHelper.CHATS_TABLE, null, selection, selectionArgs, null, null, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                int id = cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.KEY_ID));
-                String difficulty = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.KEY_DIFFICULTY));
-                String specialization = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.KEY_SPECIALIZATION));
-                String language = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.KEY_LANGUAGE));
-                int status = cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.KEY_STATUS));
-                int numberQuestions = cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.KEY_NUMBER_QUESTIONS));
-                String startTime = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.KEY_START_TIME));
-
-                Chat chat = new Chat(id, difficulty, specialization, language, status, numberQuestions, startTime);
-
-                chatList.add(chat);
-            } while (cursor.moveToNext());
-        }
-
-        cursor.close();
-        return chatList;
+        return future;
     }
 
-    public void deleteChatById(int id) {
-        String whereClause = "id = ?";
-        String[] whereArgs = new String[]{String.valueOf(id)};
-        database.delete(DBHelper.CHATS_TABLE, whereClause, whereArgs);
+
+    public void deleteChatById(String id) {
+        chatCollection.document(id).delete();
     }
 }

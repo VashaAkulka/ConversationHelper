@@ -1,80 +1,64 @@
 package com.example.conversationhelper.db.repository;
 
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
 
-import com.example.conversationhelper.db.DBHelper;
 import com.example.conversationhelper.db.model.User;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-public class UserRepository extends BaseRepository {
-    private static UserRepository instance;
+import java.util.concurrent.CompletableFuture;
 
-    private UserRepository(Context context) {
-        super(context.getApplicationContext());
-    }
+public class UserRepository {
+    private final CollectionReference usersCollection;
 
-    public static synchronized UserRepository getInstance(Context context) {
-        if (instance == null) {
-            instance = new UserRepository(context);
-        }
-        return instance;
+    public UserRepository(FirebaseFirestore db) {
+        this.usersCollection = db.collection("users");
     }
 
     public User addUser(String name, String email, String password) {
-        ContentValues values = new ContentValues();
+        String userId = usersCollection.document().getId();
+        User user = new User(userId, "user", name, password, email, null);
+        usersCollection.document(userId).set(user);
 
-        values.put(DBHelper.KEY_NAME, name);
-        values.put(DBHelper.KEY_EMAIL, email);
-        values.put(DBHelper.KEY_PASSWORD, password);
-
-        int id = (int)database.insert(DBHelper.USER_TABLE, null, values);
-        return new User(id, "user", name, password, email, null);
+        return user;
     }
 
-    public User getUserByName(String name) {
+    public CompletableFuture<User> getUserByName(String name) {
+        CompletableFuture<User> future = new CompletableFuture<>();
 
-        String selection = DBHelper.KEY_NAME + " = ?";
-        String[] selectionArgs = { name };
+        usersCollection.whereEqualTo("name", name).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        if (!task.getResult().isEmpty()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                User user = document.toObject(User.class);
+                                future.complete(user);
+                            }
+                        } else future.complete(null);;
+                    }
+                });
 
-        Cursor cursor = database.query(DBHelper.USER_TABLE, null, selection, selectionArgs, null, null, null);
-
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                User user = new User(
-                        cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.KEY_ID)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.KEY_ROLE)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.KEY_NAME)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.KEY_PASSWORD)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.KEY_EMAIL)),
-                        cursor.getBlob(cursor.getColumnIndexOrThrow(DBHelper.KEY_AVATAR))
-                );
-                cursor.close();
-                return user;
-            }
-            cursor.close();
-        }
-
-        return null;
+        return future;
     }
 
-    public boolean updateUser(User user) {
-        if (getUserByName(user.getName()) == null) {
-            ContentValues values = new ContentValues();
+    public CompletableFuture<Boolean> updateUser(User user) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
 
-            values.put(DBHelper.KEY_NAME, user.getName());
-            values.put(DBHelper.KEY_EMAIL, user.getEmail());
-            values.put(DBHelper.KEY_PASSWORD, user.getPassword());
-            values.put(DBHelper.KEY_AVATAR, user.getAvatar());
-            values.put(DBHelper.KEY_ROLE, user.getRole());
+        usersCollection.whereEqualTo("name", user.getName()).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        if (task.getResult().isEmpty()) future.complete(true);
+                        else future.complete(false);
 
-            database.update(DBHelper.USER_TABLE, values, "id = ?", new String[]{String.valueOf(user.getId())});
-            return true;
-        }
-        return false;
+                        usersCollection.document(user.getId())
+                                .set(user);
+                    }
+                });
+
+        return future;
     }
 
-    public void deleteUserById(int id) {
-        database.delete(DBHelper.USER_TABLE, "id = ?", new String[]{String.valueOf(id)});
+    public void deleteUserById(String id) {
+        usersCollection.document(id).delete();
     }
 }

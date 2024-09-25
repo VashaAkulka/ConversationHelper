@@ -1,7 +1,5 @@
 package com.example.conversationhelper;
 
-import static com.example.conversationhelper.db.repository.ChatRepository.getInstance;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -14,6 +12,7 @@ import android.widget.TextView;
 
 import com.example.conversationhelper.auth.Authentication;
 import com.example.conversationhelper.db.repository.ChatRepository;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class SettingChatActivity extends AppCompatActivity {
 
@@ -46,9 +45,9 @@ public class SettingChatActivity extends AppCompatActivity {
         String language = ((RadioButton)findViewById(checkedIdLanguage)).getText().toString();
 
         Intent intent = new Intent(SettingChatActivity.this, MessengerActivity.class);
-        ChatRepository chatRepository = getInstance(getApplicationContext());
+        ChatRepository chatRepository = new ChatRepository(FirebaseFirestore.getInstance());
 
-        intent.putExtra("CHAT", chatRepository.addChat(diff, spec, language, Integer.parseInt(questions), Authentication.getUser().getId()));
+        intent.putExtra("CHAT", chatRepository.addChat(diff, spec, language, Integer.parseInt(questions), Authentication.getUser()));
 
         startActivity(intent);
         finish();

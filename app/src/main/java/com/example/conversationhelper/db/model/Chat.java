@@ -3,15 +3,16 @@ package com.example.conversationhelper.db.model;
 import java.io.Serializable;
 
 public class Chat implements Serializable {
-    private int id;
+    private String id;
     private String difficulty;
     private String specialization;
     private String language;
     private int status;
     private int numberQuestions;
     private String startTime;
+    private User user;
 
-    public Chat(int id, String difficulty, String specialization, String language, int status, int numberQuestions, String startTime) {
+    public Chat(String id, String difficulty, String specialization, String language, int status, int numberQuestions, String startTime, User user) {
         this.id = id;
         this.difficulty = difficulty;
         this.specialization = specialization;
@@ -19,6 +20,10 @@ public class Chat implements Serializable {
         this.status = status;
         this.numberQuestions = numberQuestions;
         this.startTime = startTime;
+        this.user = user;
+    }
+
+    public Chat() {
     }
 
     public String getDifficulty() {
@@ -69,11 +74,19 @@ public class Chat implements Serializable {
         this.startTime = startTime;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

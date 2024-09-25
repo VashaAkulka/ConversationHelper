@@ -16,6 +16,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -26,17 +27,18 @@ import android.widget.TextView;
 import com.example.conversationhelper.auth.Authentication;
 import com.example.conversationhelper.db.model.User;
 import com.example.conversationhelper.db.repository.UserRepository;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.regex.Pattern;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    ImageView avatar;
-    TextView labelName;
-    TextView labelEmail;
-    UserRepository userRepository;
+    private ImageView avatar;
+    private TextView labelName;
+    private TextView labelEmail;
+    private UserRepository userRepository;
 
     private ActivityResultLauncher<Intent> imagePickerLauncher;
 
@@ -45,7 +47,7 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        userRepository = UserRepository.getInstance(getApplicationContext());
+        userRepository = new UserRepository(FirebaseFirestore.getInstance());
 
         avatar = findViewById(R.id.image_avatar);
         labelName = findViewById(R.id.profile_name);
@@ -55,9 +57,9 @@ public class ProfileActivity extends AppCompatActivity {
         labelEmail.setText(Authentication.getUser().getEmail());
 
         if (Authentication.getUser().getAvatar() != null) {
-            byte[] avatarBytes = Authentication.getUser().getAvatar();
-            Bitmap avatarBitmap = BitmapFactory.decodeByteArray(avatarBytes, 0, avatarBytes.length);
-            avatar.setImageBitmap(avatarBitmap);
+            String avatarUriString = Authentication.getUser().getAvatar();
+            Uri avatarUri = Uri.parse(avatarUriString);
+            avatar.setImageURI(avatarUri);
         }
 
         imagePickerLauncher = registerForActivityResult(
@@ -65,25 +67,18 @@ public class ProfileActivity extends AppCompatActivity {
                 result -> {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         Uri imageUri = result.getData().getData();
-                        try {
-                            InputStream imageStream = getContentResolver().openInputStream(imageUri);
-                            Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                            avatar.setImageBitmap(selectedImage);
+                        if (imageUri != null) {
+                            avatar.setImageURI(imageUri);
 
-                            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                            selectedImage.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-                            byte[] imageBytes = byteArrayOutputStream.toByteArray();
+                            String imageUriString = imageUri.toString();
+                            Authentication.getUser().setAvatar(imageUriString);
 
-                            Authentication.getUser().setAvatar(imageBytes);
                             userRepository.updateUser(Authentication.getUser());
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
                         }
                     }
                 });
-
-
     }
+
 
     public void onClickOpenGallery(View view) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -104,8 +99,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void openGallery() {
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType("image/*");
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         imagePickerLauncher.launch(intent);
     }
 
@@ -150,23 +144,31 @@ public class ProfileActivity extends AppCompatActivity {
         dialog.setOnShowListener(d -> {
             Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
             positiveButton.setOnClickListener(newView -> {
-                String newName = editTextName.getText().toString().trim();
-                String newEmail = editTextEmail.getText().toString().trim();
-                String newPassword = editTextPassword.getText().toString().trim();
+                String newName = editTextName.getText().toString();
+                String newEmail = editTextEmail.getText().toString();
+                String newPassword = editTextPassword.getText().toString();
 
-                User user = Authentication.getUser();
-                User newUser = new User(user.getId(), user.getRole(), newName, newPassword, newEmail, user.getAvatar());
-
-                if (userRepository.updateUser(newUser)) {
-                    user.setName(newName);
-                    user.setEmail(newEmail);
-                    user.setPassword(newPassword);
-
-                    labelName.setText(Authentication.getUser().getName());
-                    labelEmail.setText(Authentication.getUser().getEmail());
-                    dialog.dismiss();
+                String emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
+                if (!Pattern.compile(emailPattern).matcher(newEmail).matches()) {
+                    errorText.setText("Неправильныый формат электроной почты");
                 } else {
-                    errorText.setText("Такой пользователь уже существует");
+                    User user = Authentication.getUser();
+                    User newUser = new User(user.getId(), user.getRole(), newName, newPassword, newEmail, user.getAvatar());
+
+                    userRepository.updateUser(newUser)
+                            .thenAccept(aBoolean -> {
+                                if (aBoolean || newUser.getName().equals(user.getName())) {
+                                    user.setName(newName);
+                                    user.setEmail(newEmail);
+                                    user.setPassword(newPassword);
+
+                                    labelName.setText(Authentication.getUser().getName());
+                                    labelEmail.setText(Authentication.getUser().getEmail());
+                                    dialog.dismiss();
+                                } else {
+                                    errorText.setText("Такой пользователь уже существует");
+                                }
+                            });
                 }
             });
         });

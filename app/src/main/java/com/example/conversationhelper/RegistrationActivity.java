@@ -1,7 +1,5 @@
 package com.example.conversationhelper;
 
-import static com.example.conversationhelper.db.repository.UserRepository.getInstance;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -11,25 +9,25 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.conversationhelper.auth.Authentication;
-import com.example.conversationhelper.db.model.User;
 import com.example.conversationhelper.db.repository.UserRepository;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.regex.Pattern;
 
 public class RegistrationActivity extends AppCompatActivity {
-    UserRepository userRepository;
-    EditText editName;
-    EditText editPassword;
-    EditText editPasswordRepeat;
-    EditText editEmail;
-    TextView error;
+    private UserRepository userRepository;
+    private EditText editName;
+    private EditText editPassword;
+    private EditText editPasswordRepeat;
+    private EditText editEmail;
+    private TextView error;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
 
-        userRepository = getInstance(getApplicationContext());
+        userRepository = new UserRepository(FirebaseFirestore.getInstance());
 
         editName = findViewById(R.id.edit_user_name_reg);
         editPassword = findViewById(R.id.edit_user_password_reg);
@@ -65,16 +63,18 @@ public class RegistrationActivity extends AppCompatActivity {
             return;
         }
 
-        User user = userRepository.getUserByName(name);
-        if (user != null) {
-            error.setText("Такой пользователь уже существует");
-            return;
-        }
+        userRepository.getUserByName(name)
+                .thenAccept(user -> {
+                    if (user != null) {
+                        error.setText("Такой пользователь уже существует");
+                        return;
+                    }
 
-        Authentication.setUser(userRepository.addUser(name, email, password));
-        Intent intent = new Intent(RegistrationActivity.this, ListChatsActivity.class);
-        startActivity(intent);
-        finish();
+                    Authentication.setUser(userRepository.addUser(name, email, password));
+                    Intent intent = new Intent(RegistrationActivity.this, ListChatsActivity.class);
+                    startActivity(intent);
+                    finish();
+                });
     }
 
     public void onClickGoToLogin(View view) {

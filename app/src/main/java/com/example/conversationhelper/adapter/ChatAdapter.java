@@ -1,7 +1,5 @@
 package com.example.conversationhelper.adapter;
 
-import static com.example.conversationhelper.db.repository.ChatRepository.getInstance;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +12,7 @@ import androidx.annotation.NonNull;
 import com.example.conversationhelper.R;
 import com.example.conversationhelper.db.model.Chat;
 import com.example.conversationhelper.db.repository.ChatRepository;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 import java.util.Locale;
@@ -24,7 +23,7 @@ public class ChatAdapter extends ArrayAdapter<Chat> {
 
     public ChatAdapter(Context context, List<Chat> chats) {
         super(context, R.layout.list_item_chat, chats);
-        chatRepository = getInstance(context);
+        chatRepository = new ChatRepository(FirebaseFirestore.getInstance());
     }
 
     @NonNull
