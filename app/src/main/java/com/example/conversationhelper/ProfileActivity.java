@@ -11,8 +11,6 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,13 +22,15 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.conversationhelper.auth.Authentication;
 import com.example.conversationhelper.db.model.User;
 import com.example.conversationhelper.db.repository.UserRepository;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.regex.Pattern;
 
 public class ProfileActivity extends AppCompatActivity {
@@ -47,6 +47,8 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageReference = storage.getReference();
         userRepository = new UserRepository(FirebaseFirestore.getInstance());
 
         avatar = findViewById(R.id.image_avatar);
@@ -57,9 +59,11 @@ public class ProfileActivity extends AppCompatActivity {
         labelEmail.setText(Authentication.getUser().getEmail());
 
         if (Authentication.getUser().getAvatar() != null) {
-            String avatarUriString = Authentication.getUser().getAvatar();
-            Uri avatarUri = Uri.parse(avatarUriString);
-            avatar.setImageURI(avatarUri);
+            String avatarUrlString = Authentication.getUser().getAvatar();
+
+            Glide.with(this)
+                    .load(avatarUrlString)
+                    .into(avatar);
         }
 
         imagePickerLauncher = registerForActivityResult(
@@ -70,10 +74,18 @@ public class ProfileActivity extends AppCompatActivity {
                         if (imageUri != null) {
                             avatar.setImageURI(imageUri);
 
-                            String imageUriString = imageUri.toString();
-                            Authentication.getUser().setAvatar(imageUriString);
+                            String userId = Authentication.getUser().getId();
+                            StorageReference avatarRef = storageReference.child("avatars/" + userId + ".jpg");
 
-                            userRepository.updateUser(Authentication.getUser());
+                            UploadTask uploadTask = avatarRef.putFile(imageUri);
+                            uploadTask.addOnSuccessListener(taskSnapshot -> {
+                                avatarRef.getDownloadUrl().addOnSuccessListener(downloadUri -> {
+                                    String imageUrlString = downloadUri.toString();
+
+                                    Authentication.getUser().setAvatar(imageUrlString);
+                                    userRepository.updateUser(Authentication.getUser());
+                                });
+                            });
                         }
                     }
                 });

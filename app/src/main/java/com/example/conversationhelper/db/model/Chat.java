@@ -10,9 +10,9 @@ public class Chat implements Serializable {
     private int status;
     private int numberQuestions;
     private String startTime;
-    private User user;
+    private String userId;
 
-    public Chat(String id, String difficulty, String specialization, String language, int status, int numberQuestions, String startTime, User user) {
+    public Chat(String id, String difficulty, String specialization, String language, int status, int numberQuestions, String startTime, String userId) {
         this.id = id;
         this.difficulty = difficulty;
         this.specialization = specialization;
@@ -20,7 +20,7 @@ public class Chat implements Serializable {
         this.status = status;
         this.numberQuestions = numberQuestions;
         this.startTime = startTime;
-        this.user = user;
+        this.userId = userId;
     }
 
     public Chat() {
@@ -82,11 +82,11 @@ public class Chat implements Serializable {
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

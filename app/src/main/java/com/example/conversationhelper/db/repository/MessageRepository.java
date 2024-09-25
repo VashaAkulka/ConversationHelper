@@ -1,6 +1,5 @@
 package com.example.conversationhelper.db.repository;
 
-import com.example.conversationhelper.db.model.Chat;
 import com.example.conversationhelper.db.model.Message;
 import com.example.conversationhelper.time.TimeStampConvertor;
 import com.google.firebase.firestore.CollectionReference;
@@ -18,11 +17,11 @@ public class MessageRepository {
         this.messageCollection = db.collection("messages");
     }
 
-    public Message addMessage(String content, Chat chat, String type) {
+    public Message addMessage(String content, String chatId, String type) {
         String messageId = messageCollection.document().getId();
         String createTime = TimeStampConvertor.getCurrentTimestamp();
 
-        Message message = new Message(messageId, content, type, createTime, chat);
+        Message message = new Message(messageId, content, type, createTime, chatId);
         messageCollection.document(messageId).set(message);
 
         return message;
@@ -37,7 +36,7 @@ public class MessageRepository {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Message message = document.toObject(Message.class);
-                            if (message.getChat().getId().equals(chatId)) {
+                            if (message.getChatId().equals(chatId)) {
                                 messageList.add(message);
                             }
                         }

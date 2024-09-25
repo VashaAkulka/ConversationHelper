@@ -47,7 +47,7 @@ public class SettingChatActivity extends AppCompatActivity {
         Intent intent = new Intent(SettingChatActivity.this, MessengerActivity.class);
         ChatRepository chatRepository = new ChatRepository(FirebaseFirestore.getInstance());
 
-        intent.putExtra("CHAT", chatRepository.addChat(diff, spec, language, Integer.parseInt(questions), Authentication.getUser()));
+        intent.putExtra("CHAT", chatRepository.addChat(diff, spec, language, Integer.parseInt(questions), Authentication.getUser().getId()));
 
         startActivity(intent);
         finish();

@@ -2,7 +2,6 @@ package com.example.conversationhelper.db.repository;
 
 
 import com.example.conversationhelper.db.model.Chat;
-import com.example.conversationhelper.db.model.User;
 import com.example.conversationhelper.time.TimeStampConvertor;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -19,11 +18,11 @@ public class ChatRepository {
         this.chatCollection = db.collection("chats");
     }
 
-    public Chat addChat(String difficulty, String specialization, String language, int numberQuestions, User user) {
+    public Chat addChat(String difficulty, String specialization, String language, int numberQuestions, String userId) {
         String chatId = chatCollection.document().getId();
         String createTime = TimeStampConvertor.getCurrentTimestamp();
 
-        Chat chat = new Chat(chatId, difficulty, specialization, language, 0, numberQuestions, createTime, user);
+        Chat chat = new Chat(chatId, difficulty, specialization, language, 0, numberQuestions, createTime, userId);
         chatCollection.document(chatId).set(chat);
 
         return chat;
@@ -38,7 +37,7 @@ public class ChatRepository {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Chat chat = document.toObject(Chat.class);
-                            if (chat.getUser().getId().equals(userId)) {
+                            if (chat.getUserId().equals(userId)) {
                                 chatList.add(chat);
                             }
                         }

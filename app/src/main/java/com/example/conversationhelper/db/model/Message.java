@@ -7,14 +7,14 @@ public class Message implements Serializable {
     private String content;
     private String type;
     private String createTime;
-    private Chat chat;
+    private String chatId;
 
-    public Message(String id, String content, String type, String createTime, Chat chat) {
+    public Message(String id, String content, String type, String createTime, String chatId) {
         this.id = id;
         this.content = content;
         this.type = type;
         this.createTime = createTime;
-        this.chat = chat;
+        this.chatId = chatId;
     }
 
     public Message() {
@@ -52,11 +52,11 @@ public class Message implements Serializable {
         this.id = id;
     }
 
-    public Chat getChat() {
-        return chat;
+    public String getChatId() {
+        return chatId;
     }
 
-    public void setChat(Chat chat) {
-        this.chat = chat;
+    public void setChatId(String chatId) {
+        this.chatId = chatId;
     }
 }

@@ -78,7 +78,7 @@ public class MessengerActivity extends AppCompatActivity {
         editMessage.setEnabled(false);
         editMessage.setText("");
 
-        messages.add(messageRepository.addMessage(messageContent, chat, "user"));
+        messages.add(messageRepository.addMessage(messageContent, chat.getId(), "user"));
 
         adapter.notifyDataSetChanged();
         messageHistory.setSelection(adapter.getCount() - 1);
@@ -86,7 +86,7 @@ public class MessengerActivity extends AppCompatActivity {
         ChatGptClient.send(messages, new ChatGptCallback() {
             @Override
             public void onSuccess(String result) {
-                messages.add(messageRepository.addMessage(result, chat, "assistant"));
+                messages.add(messageRepository.addMessage(result, chat.getId(), "assistant"));
 
                 adapter.notifyDataSetChanged();
                 messageHistory.setSelection(adapter.getCount() - 1);
