@@ -58,16 +58,20 @@ public class UserRepository extends BaseRepository {
         return null;
     }
 
-    public void updateUser(User user) {
-        ContentValues values = new ContentValues();
+    public boolean updateUser(User user) {
+        if (getUserByName(user.getName()) == null) {
+            ContentValues values = new ContentValues();
 
-        values.put(DBHelper.KEY_NAME, user.getName());
-        values.put(DBHelper.KEY_EMAIL, user.getEmail());
-        values.put(DBHelper.KEY_PASSWORD, user.getPassword());
-        values.put(DBHelper.KEY_AVATAR, user.getAvatar());
-        values.put(DBHelper.KEY_ROLE, user.getRole());
+            values.put(DBHelper.KEY_NAME, user.getName());
+            values.put(DBHelper.KEY_EMAIL, user.getEmail());
+            values.put(DBHelper.KEY_PASSWORD, user.getPassword());
+            values.put(DBHelper.KEY_AVATAR, user.getAvatar());
+            values.put(DBHelper.KEY_ROLE, user.getRole());
 
-        database.update(DBHelper.USER_TABLE, values, "id = ?", new String[]{String.valueOf(user.getId())});
+            database.update(DBHelper.USER_TABLE, values, "id = ?", new String[]{String.valueOf(user.getId())});
+            return true;
+        }
+        return false;
     }
 
     public void deleteUserById(int id) {

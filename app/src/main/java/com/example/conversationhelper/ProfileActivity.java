@@ -18,6 +18,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -119,6 +120,7 @@ public class ProfileActivity extends AppCompatActivity {
     public void onClickProfileButton(View view) {
         if (R.id.delete_user_button == view.getId()) userRepository.deleteUserById(Authentication.getUser().getId());
         Intent intent = new Intent(ProfileActivity.this, RegistrationActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
     }
@@ -132,26 +134,43 @@ public class ProfileActivity extends AppCompatActivity {
         EditText editTextEmail = dialogView.findViewById(R.id.editTextEmail);
         EditText editTextPassword = dialogView.findViewById(R.id.editTextPass);
 
+        TextView errorText = dialogView.findViewById(R.id.dialog_error);
+
         editTextName.setText(Authentication.getUser().getName());
         editTextEmail.setText(Authentication.getUser().getEmail());
         editTextPassword.setText(Authentication.getUser().getPassword());
 
-        new AlertDialog.Builder(this, R.style.CustomAlertDialogTheme)
+        AlertDialog dialog = new AlertDialog.Builder(this, R.style.CustomAlertDialogTheme)
                 .setTitle("Смена личных данных")
                 .setView(dialogView)
-                .setPositiveButton("Обновить", (dialog, which) -> {
-                    String newName = editTextName.getText().toString().trim();
-                    String newEmail = editTextEmail.getText().toString().trim();
-                    String newPassword = editTextPassword.getText().toString().trim();
+                .setPositiveButton("Обновить", null)
+                .setNegativeButton("Отмена", (dialogInterface, which) -> dialogInterface.dismiss())
+                .create();
 
-                    User user = Authentication.getUser();
+        dialog.setOnShowListener(d -> {
+            Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            positiveButton.setOnClickListener(newView -> {
+                String newName = editTextName.getText().toString().trim();
+                String newEmail = editTextEmail.getText().toString().trim();
+                String newPassword = editTextPassword.getText().toString().trim();
+
+                User user = Authentication.getUser();
+                User newUser = new User(user.getId(), user.getRole(), newName, newPassword, newEmail, user.getAvatar());
+
+                if (userRepository.updateUser(newUser)) {
                     user.setName(newName);
                     user.setEmail(newEmail);
                     user.setPassword(newPassword);
 
-                    userRepository.updateUser(user);
-                })
-                .setNegativeButton("Отмена", (dialog, which) -> dialog.dismiss())
-                .show();
+                    labelName.setText(Authentication.getUser().getName());
+                    labelEmail.setText(Authentication.getUser().getEmail());
+                    dialog.dismiss();
+                } else {
+                    errorText.setText("Такой пользователь уже существует");
+                }
+            });
+        });
+
+        dialog.show();
     }
 }

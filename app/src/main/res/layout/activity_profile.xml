@@ -69,7 +69,8 @@
             android:padding="0dp"
             android:text="@string/change_profile_data"
             app:cornerRadius="15dp"
-            android:onClick="onClickUpdateUserData"/>
+            android:onClick="onClickUpdateUserData"
+            android:textColor="@color/text_color"/>
         <Button
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -81,7 +82,8 @@
             android:insetTop="0dp"
             android:insetBottom="0dp"
             app:cornerRadius="15dp"
-            android:onClick="onClickProfileButton"/>
+            android:onClick="onClickProfileButton"
+            android:textColor="@color/text_color"/>
         <Button
             android:id="@+id/delete_user_button"
             android:layout_width="0dp"
@@ -94,7 +96,8 @@
             android:insetTop="0dp"
             android:insetBottom="0dp"
             app:cornerRadius="15dp"
-            android:onClick="onClickProfileButton"/>
+            android:onClick="onClickProfileButton"
+            android:textColor="@color/text_color"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
