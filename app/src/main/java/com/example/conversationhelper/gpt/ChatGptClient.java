@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 
 import com.example.conversationhelper.BuildConfig;
+import com.example.conversationhelper.db.model.Chat;
 import com.example.conversationhelper.db.model.Message;
 import com.google.gson.Gson;
 
@@ -22,11 +23,19 @@ public class ChatGptClient  {
     private static final OkHttpClient client = new OkHttpClient();
     private static final Gson gson = new Gson();
 
-    public static void send(List<Message> historyMessages, ChatGptCallback callback) {
+    public static void send(Chat chat, List<Message> historyMessages, ChatGptCallback callback) {
         Executors.newSingleThreadExecutor().execute(() -> {
 
             List<RequestMessage> messages = new ArrayList<>();
-            //messages.add(new RequestMessage("system", "Ты проводишь собеседование"));
+
+            String systemMessage = "Возьми на себя роль технического специалиста "
+                    + chat.getSpecialization() + " специализации, который должен провести технической интервью на "
+                    + chat.getLanguage().replace("ий", "ом") + " языке, задай ровно "
+                    + chat.getNumberQuestions() + " вопросов поочереди, после каждого ты должен ждать ответ, уровень квалификации "
+                    + chat.getDifficulty() + "."
+                    + " После всех вопросов ты должен подвести итоги собеседования: количество правильных ответов и советы для улучшения своих навыков.";
+
+            messages.add(new RequestMessage("system", systemMessage));
             for (int i = 0; i < historyMessages.size(); i++) {
                 messages.add(new RequestMessage(historyMessages.get(i).getType(), historyMessages.get(i).getContent()));
             }

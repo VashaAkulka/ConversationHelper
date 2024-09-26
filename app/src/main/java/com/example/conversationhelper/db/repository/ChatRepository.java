@@ -13,8 +13,11 @@ import java.util.concurrent.CompletableFuture;
 
 public class ChatRepository {
     private final CollectionReference chatCollection;
+    private final FirebaseFirestore db;
+
 
     public ChatRepository(FirebaseFirestore db) {
+        this.db = db;
         this.chatCollection = db.collection("chats");
     }
 
@@ -42,7 +45,7 @@ public class ChatRepository {
                             }
                         }
                         future.complete(chatList);
-                    };
+                    }
                 });
 
         return future;
@@ -51,5 +54,16 @@ public class ChatRepository {
 
     public void deleteChatById(String id) {
         chatCollection.document(id).delete();
+
+        db.collection("messages")
+                .whereEqualTo("chatId", id)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            document.getReference().delete();
+                        }
+                    }
+                });
     }
 }

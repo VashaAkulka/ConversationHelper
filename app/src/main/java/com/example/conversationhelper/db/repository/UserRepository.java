@@ -9,9 +9,13 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.concurrent.CompletableFuture;
 
 public class UserRepository {
+    ChatRepository chatRepository;
     private final CollectionReference usersCollection;
+    private final FirebaseFirestore db;
 
     public UserRepository(FirebaseFirestore db) {
+        this.db = db;
+        chatRepository = new ChatRepository(db);
         this.usersCollection = db.collection("users");
     }
 
@@ -34,7 +38,7 @@ public class UserRepository {
                                 User user = document.toObject(User.class);
                                 future.complete(user);
                             }
-                        } else future.complete(null);;
+                        } else future.complete(null);
                     }
                 });
 
@@ -60,5 +64,16 @@ public class UserRepository {
 
     public void deleteUserById(String id) {
         usersCollection.document(id).delete();
+
+        db.collection("chats")
+                .whereEqualTo("userId", id)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            chatRepository.deleteChatById(document.getId());
+                        }
+                    }
+                });
     }
 }

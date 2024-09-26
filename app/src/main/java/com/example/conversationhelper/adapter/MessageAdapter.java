@@ -29,9 +29,6 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 
         Message message = getItem(position);
         if (message != null) {
-            if (message.getType().equals("system")) {
-                return new View(getContext());
-            }
             String text = message.getContent();
 
             if (convertView == null) {
@@ -50,17 +47,17 @@ public class MessageAdapter extends ArrayAdapter<Message> {
             int marginInPx = (int) (50 * scale + 0.5f);
 
             if (message.getType().equals("user")) {
-                textParams.gravity = Gravity.START;
-                textParams.setMargins(0, 0, marginInPx, 0);
-                messageText.setBackgroundResource(R.drawable.round_user_message);
-
-                timeParams.gravity = Gravity.START;
-            } else {
                 textParams.gravity = Gravity.END;
                 textParams.setMargins(marginInPx, 0, 0, 0);
                 messageText.setBackgroundResource(R.drawable.round_chatgpt_message);
 
                 timeParams.gravity = Gravity.END;
+            } else {
+                textParams.gravity = Gravity.START;
+                textParams.setMargins(0, 0, marginInPx, 0);
+                messageText.setBackgroundResource(R.drawable.round_user_message);
+
+                timeParams.gravity = Gravity.START;
             }
 
             messageText.setLayoutParams(textParams);
