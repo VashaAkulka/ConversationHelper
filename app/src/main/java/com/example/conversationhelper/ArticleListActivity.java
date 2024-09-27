@@ -1,0 +1,65 @@
+package com.example.conversationhelper;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ListView;
+
+import com.example.conversationhelper.adapter.ArticleAdminAdapter;
+import com.example.conversationhelper.db.model.Article;
+import com.example.conversationhelper.db.repository.ArticleRepository;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ArticleListActivity extends AppCompatActivity {
+
+    private final List<Article> articleList = new ArrayList<>();
+    private ArticleRepository articleRepository;
+    private ArticleAdminAdapter adapter;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_article_list);
+
+        articleRepository = new ArticleRepository(FirebaseFirestore.getInstance());
+        ListView listArticle = findViewById(R.id.admin_article_list);
+        adapter = new ArticleAdminAdapter(this, articleList);
+        listArticle.setAdapter(adapter);
+
+        loadArticles();
+
+        listArticle.setOnItemClickListener((adapterView, view, i, l) -> {
+            Article selectedArticle = adapter.getItem(i);
+            if (selectedArticle != null) {
+                Intent intent = new Intent(ArticleListActivity.this, ArticleActivity.class);
+                intent.putExtra("ARTICLE", selectedArticle);
+                startActivity(intent);
+            }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadArticles();
+    }
+
+    private void loadArticles() {
+        articleRepository.getAllArticle()
+                .thenAccept(list -> {
+                    articleList.clear();
+                    articleList.addAll(list);
+                    adapter.notifyDataSetChanged();
+                });
+    }
+
+    public void onClickAddArticle(View view) {
+        Intent intent = new Intent(ArticleListActivity.this, SettingArticleActivity.class);
+        startActivity(intent);
+    }
+}

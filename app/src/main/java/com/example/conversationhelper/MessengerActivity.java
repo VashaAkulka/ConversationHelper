@@ -30,7 +30,7 @@ import java.util.List;
 
 public class MessengerActivity extends AppCompatActivity {
 
-    private List<Message> messages;
+    private final List<Message> messages = new ArrayList<>();
     private MessageAdapter adapter;
     private EditText editMessage;
     private ListView messageHistory;
@@ -51,7 +51,6 @@ public class MessengerActivity extends AppCompatActivity {
         messageHistory = findViewById(R.id.message_history);
         editMessage = findViewById(R.id.edit_message);
 
-        messages = new ArrayList<>();
         messageRepository.getMessageByChatId(chat.getId())
                         .thenAccept(list -> {
                             messages.addAll(list);
@@ -83,10 +82,10 @@ public class MessengerActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
         messageHistory.setSelection(adapter.getCount() - 1);
 
-        sendMessageWithRetries(chat, messages, messageContent, 3);
+        sendMessageWithRetries(chat, messages, 3);
     }
 
-    private void sendMessageWithRetries(Chat chat, List<Message> messages, String messageContent, int retries) {
+    private void sendMessageWithRetries(Chat chat, List<Message> messages, int retries) {
         ChatGptClient.send(chat, messages, new ChatGptCallback() {
             @Override
             public void onSuccess(String result) {
@@ -100,9 +99,9 @@ public class MessengerActivity extends AppCompatActivity {
             @Override
             public void onError(Exception e) {
                 if (retries > 0) {
-                    sendMessageWithRetries(chat, messages, messageContent, retries - 1);
+                    sendMessageWithRetries(chat, messages, retries - 1);
                 } else {
-                    editMessage.setText("Error: Соединение устройства не устойчивое, повторите попытку");
+                    editMessage.setText("Ошибка: Соединение устройства не устойчивое, повторите попытку");
                     editMessage.setEnabled(true);
                 }
             }

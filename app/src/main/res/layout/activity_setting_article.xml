@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SettingArticleActivity"
+    android:background="@color/background_color"
+    android:padding="20dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/article_title"
+        android:textColor="@color/text_color"
+        android:layout_marginBottom="8dp"
+        android:labelFor="@+id/edit_title_article"/>
+
+    <EditText
+        android:id="@+id/edit_title_article"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minLines="1"
+        android:maxLines="2"
+        android:inputType="textMultiLine"
+        android:textColor="@color/text_color"
+        android:background="@drawable/edit_text_border_background"
+        android:autofillHints="name"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/article_description"
+        android:textColor="@color/text_color"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:labelFor="@+id/edit_description_article"/>
+
+    <EditText
+        android:id="@+id/edit_description_article"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minLines="2"
+        android:maxLines="3"
+        android:inputType="textMultiLine"
+        android:textColor="@color/text_color"
+        android:background="@drawable/edit_text_border_background"
+        android:autofillHints="name"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/article_content"
+        android:textColor="@color/text_color"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:labelFor="@+id/edit_content_article"/>
+
+    <EditText
+        android:id="@+id/edit_content_article"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:inputType="textMultiLine"
+        android:textColor="@color/text_color"
+        android:gravity="start|top"
+        android:background="@drawable/edit_text_border_background"
+        android:autofillHints="name"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/message_background_color"
+        android:padding="20dp"
+        android:layout_gravity="center"
+        android:text="@string/create_button"
+        android:textColor="@color/text_color"
+        app:cornerRadius="10dp"
+        android:onClick="onClickAddArticle"/>
+</LinearLayout>

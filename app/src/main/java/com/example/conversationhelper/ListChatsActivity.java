@@ -20,7 +20,7 @@ public class ListChatsActivity extends AppCompatActivity {
 
     private ChatRepository chatRepository;
     private ChatAdapter adapter;
-    private List<Chat> chatList = new ArrayList<>();
+    private final List<Chat> chatList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,13 +29,10 @@ public class ListChatsActivity extends AppCompatActivity {
 
         chatRepository = new ChatRepository(FirebaseFirestore.getInstance());
         ListView listChat = findViewById(R.id.list_chat);
+        adapter = new ChatAdapter(this, chatList);
+        listChat.setAdapter(adapter);
 
-        chatRepository.getAllChatsByUserId(Authentication.getUser().getId())
-                .thenAccept(list -> {
-                    adapter = new ChatAdapter(this, chatList);
-                    listChat.setAdapter(adapter);
-                });
-
+        loadChats();
 
         listChat.setOnItemClickListener((adapterView, view, i, l) -> {
             Chat selectedChat = adapter.getItem(i);
@@ -55,13 +52,16 @@ public class ListChatsActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        chatList.clear();
+        loadChats();
+    }
 
+    private void loadChats() {
         chatRepository.getAllChatsByUserId(Authentication.getUser().getId())
-                        .thenAccept(list -> {
-                            chatList.addAll(list);
-                            adapter.notifyDataSetChanged();
-                        });
+                .thenAccept(list -> {
+                    chatList.clear();
+                    chatList.addAll(list);
+                    adapter.notifyDataSetChanged();
+                });
     }
 
     public void onClickToProfile(View view) {
@@ -70,5 +70,7 @@ public class ListChatsActivity extends AppCompatActivity {
     }
 
     public void onClickToArticle(View view) {
+        Intent intent = new Intent(ListChatsActivity.this, ArticleListActivity.class);
+        startActivity(intent);
     }
 }

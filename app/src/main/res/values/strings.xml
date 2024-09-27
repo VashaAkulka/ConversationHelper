@@ -25,4 +25,8 @@
     <string name="dialog_label_name">Имя:</string>
     <string name="dialog_label_email">Почта:</string>
     <string name="dialog_label_password">Пароль:</string>
+    <string name="article_title">Заголовок:</string>
+    <string name="article_description">Описание:</string>
+    <string name="article_content">Содержимое:</string>
+    <string name="create_button">Создать</string>
 </resources>

@@ -19,7 +19,7 @@ import java.util.Locale;
 
 public class ChatAdapter extends ArrayAdapter<Chat> {
 
-    ChatRepository chatRepository;
+    private final ChatRepository chatRepository;
 
     public ChatAdapter(Context context, List<Chat> chats) {
         super(context, R.layout.list_item_chat, chats);
@@ -44,15 +44,13 @@ public class ChatAdapter extends ArrayAdapter<Chat> {
                     chat.getNumberQuestions(),
                     chat.getStatus() == 0 ? "в процессе" : "завершен",
                     chat.getLanguage()));
-        }
 
-        convertView.findViewById(R.id.delete_button).setOnClickListener(view -> {
-            if (chat != null) {
+            convertView.findViewById(R.id.delete_button).setOnClickListener(view -> {
                 chatRepository.deleteChatById(chat.getId());
                 remove(chat);
                 notifyDataSetChanged();
-            }
-        });
+            });
+        }
 
         return convertView;
     }

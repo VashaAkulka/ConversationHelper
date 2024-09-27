@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,15 +29,17 @@ public class MessageAdapter extends ArrayAdapter<Message> {
     @Override
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         Message message = getItem(position);
+
+        if (convertView == null) {
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_message, parent, false);
+        }
+
+        TextView messageText = convertView.findViewById(R.id.message_text);
+        TextView messageTime = convertView.findViewById(R.id.message_time);
+
         if (message != null) {
             String text = message.getContent();
 
-            if (convertView == null) {
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_message, parent, false);
-            }
-
-            TextView messageText = convertView.findViewById(R.id.message_text);
-            TextView messageTime = convertView.findViewById(R.id.message_time);
             messageText.setText(text);
             messageTime.setText(message.getCreateTime().toDate().toString().substring(11, 16));
 
@@ -67,7 +68,7 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 
             messageText.setOnLongClickListener(view -> {
                 copyToClipboard(text);
-                showCustomToast("Текст скопирован");
+                showCustomToast(parent);
                 return true;
             });
         }
@@ -81,12 +82,12 @@ public class MessageAdapter extends ArrayAdapter<Message> {
         clipboard.setPrimaryClip(clip);
     }
 
-    private void showCustomToast(String message) {
+    private void showCustomToast(ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(getContext());
-        View layout = inflater.inflate(R.layout.custom_toast, null);
+        View layout = inflater.inflate(R.layout.custom_toast, parent);
 
         TextView toastMessage = layout.findViewById(R.id.toast_message);
-        toastMessage.setText(message);
+        toastMessage.setText("Текст скопирован");
 
         Toast toast = new Toast(getContext());
         toast.setDuration(Toast.LENGTH_SHORT);
