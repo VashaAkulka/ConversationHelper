@@ -83,6 +83,10 @@ public class MessengerActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
         messageHistory.setSelection(adapter.getCount() - 1);
 
+        sendMessageWithRetries(chat, messages, messageContent, 3);
+    }
+
+    private void sendMessageWithRetries(Chat chat, List<Message> messages, String messageContent, int retries) {
         ChatGptClient.send(chat, messages, new ChatGptCallback() {
             @Override
             public void onSuccess(String result) {
@@ -95,7 +99,12 @@ public class MessengerActivity extends AppCompatActivity {
 
             @Override
             public void onError(Exception e) {
-                throw new RuntimeException(e.getCause());
+                if (retries > 0) {
+                    sendMessageWithRetries(chat, messages, messageContent, retries - 1);
+                } else {
+                    editMessage.setText("Error: Соединение устройства не устойчивое, повторите попытку");
+                    editMessage.setEnabled(true);
+                }
             }
         });
     }

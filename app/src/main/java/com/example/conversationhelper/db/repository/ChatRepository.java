@@ -2,7 +2,7 @@ package com.example.conversationhelper.db.repository;
 
 
 import com.example.conversationhelper.db.model.Chat;
-import com.example.conversationhelper.time.TimeStampConvertor;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -23,7 +23,7 @@ public class ChatRepository {
 
     public Chat addChat(String difficulty, String specialization, String language, int numberQuestions, String userId) {
         String chatId = chatCollection.document().getId();
-        String createTime = TimeStampConvertor.getCurrentTimestamp();
+        Timestamp createTime = Timestamp.now();
 
         Chat chat = new Chat(chatId, difficulty, specialization, language, 0, numberQuestions, createTime, userId);
         chatCollection.document(chatId).set(chat);

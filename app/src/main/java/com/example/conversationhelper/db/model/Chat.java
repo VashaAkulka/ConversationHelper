@@ -1,5 +1,7 @@
 package com.example.conversationhelper.db.model;
 
+import com.google.firebase.Timestamp;
+
 import java.io.Serializable;
 
 public class Chat implements Serializable {
@@ -9,10 +11,10 @@ public class Chat implements Serializable {
     private String language;
     private int status;
     private int numberQuestions;
-    private String startTime;
+    private transient Timestamp startTime;
     private String userId;
 
-    public Chat(String id, String difficulty, String specialization, String language, int status, int numberQuestions, String startTime, String userId) {
+    public Chat(String id, String difficulty, String specialization, String language, int status, int numberQuestions, Timestamp startTime, String userId) {
         this.id = id;
         this.difficulty = difficulty;
         this.specialization = specialization;
@@ -66,11 +68,11 @@ public class Chat implements Serializable {
         this.numberQuestions = numberQuestions;
     }
 
-    public String getStartTime() {
+    public Timestamp getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(String startTime) {
+    public void setStartTime(Timestamp startTime) {
         this.startTime = startTime;
     }
 

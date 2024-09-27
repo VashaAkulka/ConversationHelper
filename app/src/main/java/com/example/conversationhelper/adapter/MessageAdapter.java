@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 
 import com.example.conversationhelper.R;
 import com.example.conversationhelper.db.model.Message;
-import com.example.conversationhelper.time.TimeStampConvertor;
 
 import java.util.List;
 
@@ -38,7 +37,7 @@ public class MessageAdapter extends ArrayAdapter<Message> {
             TextView messageText = convertView.findViewById(R.id.message_text);
             TextView messageTime = convertView.findViewById(R.id.message_time);
             messageText.setText(text);
-            messageTime.setText(TimeStampConvertor.getHoursAndMinuets(message.getCreateTime()));
+            messageTime.setText(message.getCreateTime().toDate().toString().substring(11, 16));
 
             LinearLayout.LayoutParams textParams = (LinearLayout.LayoutParams) messageText.getLayoutParams();
             LinearLayout.LayoutParams timeParams = (LinearLayout.LayoutParams) messageTime.getLayoutParams();

@@ -1,7 +1,7 @@
 package com.example.conversationhelper.db.repository;
 
 import com.example.conversationhelper.db.model.Message;
-import com.example.conversationhelper.time.TimeStampConvertor;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -19,7 +19,7 @@ public class MessageRepository {
 
     public Message addMessage(String content, String chatId, String type) {
         String messageId = messageCollection.document().getId();
-        String createTime = TimeStampConvertor.getCurrentTimestamp();
+        Timestamp createTime = Timestamp.now();
 
         Message message = new Message(messageId, content, type, createTime, chatId);
         messageCollection.document(messageId).set(message);
@@ -31,7 +31,7 @@ public class MessageRepository {
         CompletableFuture<List<Message>> future = new CompletableFuture<>();
         List<Message> messageList = new ArrayList<>();
 
-        messageCollection.get()
+        messageCollection.orderBy("createTime").get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {

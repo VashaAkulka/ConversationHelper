@@ -124,7 +124,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     public void onClickProfileButton(View view) {
-        if (R.id.delete_user_button == view.getId()) userRepository.deleteUserById(Authentication.getUser().getId());
+        if (R.id.delete_user_button == view.getId()) userRepository.deleteUserById(Authentication.getUser().getId(), FirebaseStorage.getInstance());
         Intent intent = new Intent(ProfileActivity.this, RegistrationActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);

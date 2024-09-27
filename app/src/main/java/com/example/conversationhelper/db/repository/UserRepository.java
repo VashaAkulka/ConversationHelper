@@ -5,6 +5,8 @@ import com.example.conversationhelper.db.model.User;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -62,7 +64,7 @@ public class UserRepository {
         return future;
     }
 
-    public void deleteUserById(String id) {
+    public void deleteUserById(String id, FirebaseStorage firebaseStorage) {
         usersCollection.document(id).delete();
 
         db.collection("chats")
@@ -75,5 +77,8 @@ public class UserRepository {
                         }
                     }
                 });
+
+        StorageReference avatarRef = firebaseStorage.getReference().child("avatars/" + id + ".jpg");
+        avatarRef.delete();
     }
 }

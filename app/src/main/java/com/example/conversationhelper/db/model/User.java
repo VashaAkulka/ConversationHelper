@@ -1,8 +1,6 @@
 package com.example.conversationhelper.db.model;
 
-import java.io.Serializable;
-
-public class User implements Serializable {
+public class User {
     private String id;
     private String role;
     private String name;

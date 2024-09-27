@@ -1,15 +1,15 @@
 package com.example.conversationhelper.db.model;
 
-import java.io.Serializable;
+import com.google.firebase.Timestamp;
 
-public class Message implements Serializable {
+public class Message {
     private String id;
     private String content;
     private String type;
-    private String createTime;
+    private Timestamp createTime;
     private String chatId;
 
-    public Message(String id, String content, String type, String createTime, String chatId) {
+    public Message(String id, String content, String type, Timestamp createTime, String chatId) {
         this.id = id;
         this.content = content;
         this.type = type;
@@ -36,11 +36,11 @@ public class Message implements Serializable {
         this.type = type;
     }
 
-    public String getCreateTime() {
+    public Timestamp getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(String createTime) {
+    public void setCreateTime(Timestamp createTime) {
         this.createTime = createTime;
     }
 
