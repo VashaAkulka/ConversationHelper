@@ -1,5 +1,7 @@
 package com.example.conversationhelper.adapter;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -7,7 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -25,7 +29,6 @@ public class MessageAdapter extends ArrayAdapter<Message> {
     @NonNull
     @Override
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-
         Message message = getItem(position);
         if (message != null) {
             String text = message.getContent();
@@ -61,8 +64,34 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 
             messageText.setLayoutParams(textParams);
             messageTime.setLayoutParams(timeParams);
+
+            messageText.setOnLongClickListener(view -> {
+                copyToClipboard(text);
+                showCustomToast("Текст скопирован");
+                return true;
+            });
         }
 
         return convertView;
+    }
+
+    private void copyToClipboard(String text) {
+        ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("Скопированный текст", text);
+        clipboard.setPrimaryClip(clip);
+    }
+
+    private void showCustomToast(String message) {
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        View layout = inflater.inflate(R.layout.custom_toast, null);
+
+        TextView toastMessage = layout.findViewById(R.id.toast_message);
+        toastMessage.setText(message);
+
+        Toast toast = new Toast(getContext());
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(layout);
+        toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 200);
+        toast.show();
     }
 }
