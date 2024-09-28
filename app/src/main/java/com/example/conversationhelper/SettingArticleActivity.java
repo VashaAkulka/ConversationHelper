@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.conversationhelper.auth.Authentication;
@@ -18,6 +19,9 @@ public class SettingArticleActivity extends AppCompatActivity {
     private EditText title;
     private EditText content;
     private EditText description;
+    private boolean isCreate = true;
+    private Article article;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,10 +30,14 @@ public class SettingArticleActivity extends AppCompatActivity {
         title = findViewById(R.id.edit_title_article);
         description = findViewById(R.id.edit_description_article);
         content = findViewById(R.id.edit_content_article);
+        Button addEditButton = findViewById(R.id.save_update_article_button);
 
         Intent intent = getIntent();
-        Article article = (Article) intent.getSerializableExtra("ARTICLE");
+        article = (Article) intent.getSerializableExtra("ARTICLE");
         if (article != null) {
+            isCreate = false;
+            addEditButton.setText("Обновить");
+
             title.setText(article.getTitle());
             description.setText(article.getDescription());
             content.setText(article.getContent());
@@ -38,8 +46,19 @@ public class SettingArticleActivity extends AppCompatActivity {
         articleRepository = new ArticleRepository(FirebaseFirestore.getInstance());
     }
 
-    public void onClickAddArticle(View view) {
-        Article article = articleRepository.addArticle(title.getText().toString(), description.getText().toString(), content.getText().toString(), Authentication.getUser().getId());
+    public void onClickAddUpdateArticle(View view) {
+        String titleStr = title.getText().toString();
+        String descriptionStr = description.getText().toString();
+        String contentStr = content.getText().toString();
+
+
+        if (isCreate) article = articleRepository.addArticle(titleStr, descriptionStr, contentStr, Authentication.getUser().getId());
+        else {
+            article.setTitle(titleStr);
+            article.setTitle(descriptionStr);
+            article.setTitle(contentStr);
+            articleRepository.updateArticle(article);
+        }
 
         Intent intent = new Intent(SettingArticleActivity.this, ArticleActivity.class);
         intent.putExtra("ARTICLE", article);

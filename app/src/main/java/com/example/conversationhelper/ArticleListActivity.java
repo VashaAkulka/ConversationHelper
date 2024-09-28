@@ -7,7 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 
-import com.example.conversationhelper.adapter.ArticleAdminAdapter;
+import com.example.conversationhelper.adapter.ArticleAdapter;
+import com.example.conversationhelper.auth.Authentication;
 import com.example.conversationhelper.db.model.Article;
 import com.example.conversationhelper.db.repository.ArticleRepository;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -19,7 +20,7 @@ public class ArticleListActivity extends AppCompatActivity {
 
     private final List<Article> articleList = new ArrayList<>();
     private ArticleRepository articleRepository;
-    private ArticleAdminAdapter adapter;
+    private ArticleAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,10 +29,14 @@ public class ArticleListActivity extends AppCompatActivity {
 
         articleRepository = new ArticleRepository(FirebaseFirestore.getInstance());
         ListView listArticle = findViewById(R.id.admin_article_list);
-        adapter = new ArticleAdminAdapter(this, articleList);
+        adapter = new ArticleAdapter(this, articleList);
         listArticle.setAdapter(adapter);
 
         loadArticles();
+
+        if (Authentication.getUser().getRole().equals("user")) {
+            findViewById(R.id.add_article_button).setVisibility(View.GONE);
+        }
 
         listArticle.setOnItemClickListener((adapterView, view, i, l) -> {
             Article selectedArticle = adapter.getItem(i);

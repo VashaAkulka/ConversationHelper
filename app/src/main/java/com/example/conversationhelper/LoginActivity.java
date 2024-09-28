@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.conversationhelper.auth.Authentication;
+import com.example.conversationhelper.auth.SharedPreferencesUtil;
 import com.example.conversationhelper.db.repository.UserRepository;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -48,6 +49,10 @@ public class LoginActivity extends AppCompatActivity {
                     }
 
                     Authentication.setUser(user);
+
+                    SharedPreferencesUtil sharedPreferencesUtil = new SharedPreferencesUtil(this);
+                    sharedPreferencesUtil.saveUser(user);
+
                     Intent intent = new Intent(LoginActivity.this, ListChatsActivity.class);
                     startActivity(intent);
                     finish();

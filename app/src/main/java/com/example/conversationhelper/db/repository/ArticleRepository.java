@@ -47,4 +47,8 @@ public class ArticleRepository {
         articleCollection.document(articleId).set(article);
         return article;
     }
+
+    public void updateArticle(Article article) {
+        articleCollection.document(article.getId()).set(article);
+    }
 }

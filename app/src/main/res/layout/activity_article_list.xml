@@ -16,7 +16,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/add_article_button"
-        android:layout_marginBottom="30dp"
         android:divider="@color/text_color"
         android:dividerHeight="2dp"/>
 
@@ -25,6 +24,7 @@
         android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="30dp"
+        android:layout_marginTop="30dp"
         android:adjustViewBounds="true"
         android:background="@drawable/round_button_message_controll"
         android:onClick="onClickAddArticle"
@@ -32,7 +32,8 @@
         android:src="@drawable/baseline_add_24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/admin_article_list"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

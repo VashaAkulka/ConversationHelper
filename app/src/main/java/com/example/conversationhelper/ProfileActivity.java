@@ -24,6 +24,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.conversationhelper.auth.Authentication;
+import com.example.conversationhelper.auth.SharedPreferencesUtil;
 import com.example.conversationhelper.db.model.User;
 import com.example.conversationhelper.db.repository.UserRepository;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -126,6 +127,10 @@ public class ProfileActivity extends AppCompatActivity {
     public void onClickProfileButton(View view) {
         if (R.id.delete_user_button == view.getId()) userRepository.deleteUserById(Authentication.getUser().getId(), FirebaseStorage.getInstance());
         Intent intent = new Intent(ProfileActivity.this, RegistrationActivity.class);
+
+        SharedPreferencesUtil sharedPreferencesUtil = new SharedPreferencesUtil(this);
+        sharedPreferencesUtil.deleteUser();
+
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();

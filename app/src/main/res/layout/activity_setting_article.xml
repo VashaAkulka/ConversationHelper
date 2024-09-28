@@ -69,6 +69,7 @@
         android:autofillHints="name"/>
 
     <Button
+        android:id="@+id/save_update_article_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -78,5 +79,5 @@
         android:text="@string/create_button"
         android:textColor="@color/text_color"
         app:cornerRadius="10dp"
-        android:onClick="onClickAddArticle"/>
+        android:onClick="onClickAddUpdateArticle"/>
 </LinearLayout>
