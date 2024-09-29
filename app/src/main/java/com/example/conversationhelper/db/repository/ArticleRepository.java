@@ -43,7 +43,7 @@ public class ArticleRepository {
         String articleId = articleCollection.document().getId();
         Timestamp createTime = Timestamp.now();
 
-        Article article = new Article(articleId, userId, title, description, content, 0, createTime);
+        Article article = new Article(articleId, userId, title, description, content, createTime);
         articleCollection.document(articleId).set(article);
         return article;
     }

@@ -10,16 +10,14 @@ public class Article implements Serializable {
     private String title;
     private String description;
     private String content;
-    private int countLike;
     private transient Timestamp createTime;
 
-    public Article(String id, String userId, String title, String description, String content, int countLike, Timestamp createTime) {
+    public Article(String id, String userId, String title, String description, String content, Timestamp createTime) {
         this.id = id;
         this.userId = userId;
         this.title = title;
         this.description = description;
         this.content = content;
-        this.countLike = countLike;
         this.createTime = createTime;
     }
 
@@ -64,14 +62,6 @@ public class Article implements Serializable {
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public int getCountLike() {
-        return countLike;
-    }
-
-    public void setCountLike(int countLike) {
-        this.countLike = countLike;
     }
 
     public Timestamp getCreateTime() {

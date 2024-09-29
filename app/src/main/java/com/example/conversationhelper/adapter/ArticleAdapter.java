@@ -16,6 +16,7 @@ import com.example.conversationhelper.SettingArticleActivity;
 import com.example.conversationhelper.auth.Authentication;
 import com.example.conversationhelper.db.model.Article;
 import com.example.conversationhelper.db.repository.ArticleRepository;
+import com.example.conversationhelper.db.repository.LikeRepository;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
@@ -26,10 +27,12 @@ import java.util.Locale;
 public class ArticleAdapter extends ArrayAdapter<Article> {
 
     private final ArticleRepository articleRepository;
+    private final LikeRepository likeRepository;
 
     public ArticleAdapter(Context context, List<Article> articles) {
         super(context, R.layout.list_item_article, articles);
         articleRepository = new ArticleRepository(FirebaseFirestore.getInstance());
+        likeRepository = new LikeRepository(FirebaseFirestore.getInstance());
     }
 
     @NonNull
@@ -51,10 +54,11 @@ public class ArticleAdapter extends ArrayAdapter<Article> {
         if (article != null) {
             titleText.setText(article.getTitle());
             descriptionText.setText(article.getDescription());
-            likeNumberText.setText(String.valueOf(article.getCountLike()));
+
+            likeRepository.getCountLikeByArticleId(article.getId()).thenAccept(countLike -> likeNumberText.setText(String.valueOf(countLike)));
 
             Date createTime = article.getCreateTime().toDate();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
             String formattedDate = dateFormat.format(createTime);
             dateText.setText(String.format("Дата: %s", formattedDate));
 

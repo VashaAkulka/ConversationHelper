@@ -35,7 +35,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/text_color"
+            android:layout_marginBottom="20dp"
             android:textStyle="normal" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/like_article_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onClickLike"
+                android:layout_marginEnd="10dp"/>
+
+            <TextView
+                android:id="@+id/count_like_article"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textColor="@color/text_color"
+                android:gravity="center|start"/>
+        </LinearLayout>
 
     </LinearLayout>
 
