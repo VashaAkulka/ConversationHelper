@@ -68,13 +68,14 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         private final TextView date;
         private final ImageView avatar;
         private final ImageView deleteButton;
-        private final CommentRepository commentRepository;
         private final CommentAdapter adapter;
+        private final CommentRepository commentRepository;
+
 
         public CommentViewHolder(@NonNull View itemView, CommentRepository commentRepository, CommentAdapter adapter) {
             super(itemView);
-            this.commentRepository = commentRepository;
             this.adapter = adapter;
+            this.commentRepository = commentRepository;
             userName = itemView.findViewById(R.id.user_name_comment);
             content = itemView.findViewById(R.id.comment_content);
             date = itemView.findViewById(R.id.date_comment);
@@ -86,9 +87,11 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
             content.setText(comment.getContent());
             userName.setText(user.getName());
 
-            Glide.with(itemView.getContext())
-                    .load(user.getAvatar())
-                    .into(avatar);
+            if (user.getAvatar() != null) {
+                Glide.with(itemView.getContext())
+                        .load(user.getAvatar())
+                        .into(avatar);
+            }
 
             Date createTime = comment.getCreateTime().toDate();
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy   HH:mm", Locale.getDefault());
@@ -104,8 +107,10 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
                 }
             });
 
-            if (!Authentication.getUser().getName().equals(user.getName()) || Authentication.getUser().getRole().equals("user")) {
-                deleteButton.setVisibility(View.GONE);
+            if (Authentication.getUser().getRole().equals("user")) {
+                if (!Authentication.getUser().getName().equals(user.getName())) {
+                    deleteButton.setVisibility(View.GONE);
+                }
             }
         }
     }

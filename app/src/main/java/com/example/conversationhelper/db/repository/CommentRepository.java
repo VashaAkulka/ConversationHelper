@@ -7,6 +7,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -28,6 +29,7 @@ public class CommentRepository {
                            Comment comment = document.toObject(Comment.class);
                            commentList.add(comment);
                        }
+                       commentList.sort(Comparator.comparing(Comment::getCreateTime));
                        future.complete(commentList);
                    }
                 });

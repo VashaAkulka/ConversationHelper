@@ -2,11 +2,11 @@ package com.example.conversationhelper;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.method.PasswordTransformationMethod;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -15,7 +15,6 @@ import com.example.conversationhelper.auth.SharedPreferencesUtil;
 import com.example.conversationhelper.db.model.User;
 import com.example.conversationhelper.db.repository.UserRepository;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.gson.Gson;
 
 import java.util.regex.Pattern;
 
@@ -101,5 +100,19 @@ public class RegistrationActivity extends AppCompatActivity {
         Intent intent = new Intent(RegistrationActivity.this, LoginActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    public void OnClickShowPassword(View view) {
+        CheckBox checkBox = (CheckBox) view;
+        if (checkBox.isChecked()) {
+            editPassword.setTransformationMethod(null);
+            editPasswordRepeat.setTransformationMethod(null);
+        } else {
+            editPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            editPasswordRepeat.setTransformationMethod(PasswordTransformationMethod.getInstance());
+        }
+
+        editPassword.setSelection(editPassword.getText().length());
+        editPasswordRepeat.setSelection(editPasswordRepeat.getText().length());
     }
 }

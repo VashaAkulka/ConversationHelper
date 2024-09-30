@@ -40,7 +40,8 @@
             android:layout_marginBottom="20dp"
             android:textColor="@color/text_color"
             android:inputType="textEmailAddress"
-            android:autofillHints="emailAddress"/>
+            android:autofillHints="emailAddress"
+            android:textStyle="normal"/>
         <EditText
             android:id="@+id/edit_user_password_reg"
             android:layout_width="match_parent"
@@ -50,7 +51,8 @@
             android:layout_marginBottom="20dp"
             android:textColor="@color/text_color"
             android:inputType="textPassword"
-            android:autofillHints="password"/>
+            android:autofillHints="password"
+            android:textStyle="normal"/>
         <EditText
             android:id="@+id/edit_user_password_repeat_reg"
             android:layout_width="match_parent"
@@ -60,6 +62,15 @@
             android:textColor="@color/text_color"
             android:inputType="textPassword"
             android:autofillHints="password"/>
+
+        <CheckBox
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/show_password"
+            android:textColor="@color/text_color"
+            android:onClick="OnClickShowPassword"
+            android:buttonTint="@color/hint_color"/>
+
         <TextView
             android:id="@+id/error_text_registration_form"
             android:layout_width="wrap_content"

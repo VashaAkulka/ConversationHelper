@@ -1,6 +1,7 @@
 package com.example.conversationhelper;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -79,10 +80,14 @@ public class ArticleActivity extends AppCompatActivity {
             adapter = new CommentAdapter(this, commentList, FirebaseFirestore.getInstance());
             commentRecyclerView.setAdapter(adapter);
             commentRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+            DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(commentRecyclerView.getContext(), LinearLayoutManager.VERTICAL);
+            commentRecyclerView.addItemDecoration(dividerItemDecoration);
+
             commentRepository.getAllCommentByArticleId(article.getId())
                     .thenAccept(list -> {
                         commentList.addAll(list);
-                        adapter.notifyItemInserted(list.size());
+                        adapter.notifyItemInserted(list.size() - 1);
                     });
         }
     }
@@ -106,7 +111,7 @@ public class ArticleActivity extends AppCompatActivity {
     public void OnClickAddComment(View view) {
         Comment comment = commentRepository.addComment(editComment.getText().toString(), Authentication.getUser().getId(), article.getId());
         commentList.add(comment);
-        adapter.notifyItemInserted(commentList.size());
+        adapter.notifyItemInserted(commentList.size() - 1);
         editComment.setText("");
     }
 }
