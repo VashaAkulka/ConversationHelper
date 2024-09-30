@@ -3,6 +3,7 @@ package com.example.conversationhelper.db.repository;
 
 import com.example.conversationhelper.db.model.User;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
@@ -80,5 +81,19 @@ public class UserRepository {
 
         StorageReference avatarRef = firebaseStorage.getReference().child("avatars/" + id + ".jpg");
         avatarRef.delete();
+    }
+
+    public CompletableFuture<User> getUserById(String id) {
+        CompletableFuture<User> future = new CompletableFuture<>();
+
+        usersCollection.document(id).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        future.complete(document.toObject(User.class));
+                    }
+                });
+
+        return future;
     }
 }
