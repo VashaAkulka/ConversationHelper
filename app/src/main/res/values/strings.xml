@@ -30,4 +30,5 @@
     <string name="article_content">Содержимое:</string>
     <string name="create_button">Создать</string>
     <string name="comments_text">Комментарии:</string>
+    <string name="comment_hint">Добавить комментарий</string>
 </resources>

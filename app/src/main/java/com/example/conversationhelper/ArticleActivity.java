@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,6 +30,7 @@ public class ArticleActivity extends AppCompatActivity {
     private CommentAdapter adapter;
     private ImageView like;
     private TextView countLikeText;
+    private EditText editComment;
     private int countLike;
     private Article article;
 
@@ -44,6 +46,7 @@ public class ArticleActivity extends AppCompatActivity {
         TextView title = findViewById(R.id.title_article);
         TextView description = findViewById(R.id.description_article);
         TextView content = findViewById(R.id.content_article);
+        editComment = findViewById(R.id.edit_comment_text);
         like = findViewById(R.id.like_article_button);
         countLikeText = findViewById(R.id.count_like_article);
 
@@ -100,4 +103,10 @@ public class ArticleActivity extends AppCompatActivity {
         countLikeText.setText(String.valueOf(countLike));
     }
 
+    public void OnClickAddComment(View view) {
+        Comment comment = commentRepository.addComment(editComment.getText().toString(), Authentication.getUser().getId(), article.getId());
+        commentList.add(comment);
+        adapter.notifyItemInserted(commentList.size());
+        editComment.setText("");
+    }
 }
