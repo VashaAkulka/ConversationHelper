@@ -65,6 +65,17 @@ public class ChatRepository {
                         }
                     }
                 });
+
+        db.collection("results")
+                .whereEqualTo("chadId", id)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            document.getReference().delete();
+                        }
+                    }
+                });
     }
 
     public void updateChatStatusById(String id) {

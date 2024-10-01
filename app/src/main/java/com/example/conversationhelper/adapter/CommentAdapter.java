@@ -30,10 +30,12 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
     private final Context context;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
+    private final OnCommentDeletedListener listener;
 
-    public CommentAdapter(Context context, List<Comment> comments, FirebaseFirestore db) {
+    public CommentAdapter(Context context, List<Comment> comments, FirebaseFirestore db, OnCommentDeletedListener listener) {
         this.context = context;
         this.comments = comments;
+        this.listener = listener;
         userRepository = new UserRepository(db);
         commentRepository = new CommentRepository(db);
     }
@@ -60,6 +62,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
     public void removeComment(int position) {
         comments.remove(position);
         notifyItemRemoved(position);
+        listener.onCommentDeleted();
     }
 
     static class CommentViewHolder extends RecyclerView.ViewHolder {

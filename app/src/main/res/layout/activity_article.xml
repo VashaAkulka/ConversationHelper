@@ -46,11 +46,28 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="onClickLike"
+                android:src="@drawable/baseline_favorite_24"
                 android:layout_marginEnd="10dp"/>
 
             <TextView
                 android:id="@+id/count_like_article"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textColor="@color/text_color"
+                android:gravity="center|start"
+                android:layout_marginEnd="50dp"/>
+
+            <ImageView
+                android:id="@+id/comment_article_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onClickComment"
+                android:src="@drawable/baseline_mode_comment_24"
+                android:layout_marginEnd="10dp"/>
+
+            <TextView
+                android:id="@+id/count_comment_article"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:textColor="@color/text_color"
                 android:gravity="center|start"/>
@@ -58,12 +75,14 @@
 
 
         <TextView
+            android:id="@+id/title_comments"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/comments_text"
             android:textColor="@color/text_color"
             android:layout_marginTop="50dp"
-            android:layout_marginBottom="15dp"/>
+            android:layout_marginBottom="15dp"
+            android:visibility="gone"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -82,9 +101,11 @@
                 android:textSize="14sp"
                 android:padding="10dp"
                 android:inputType="text"
-                android:autofillHints="name"/>
+                android:autofillHints="name"
+                android:visibility="gone"/>
 
             <ImageButton
+                android:id="@+id/send_comment_button"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:src="@drawable/baseline_arrow_upward_24"
@@ -92,13 +113,15 @@
                 android:scaleType="fitXY"
                 android:adjustViewBounds="true"
                 android:layout_marginStart="15dp"
+                android:visibility="gone"
                 android:onClick="OnClickAddComment"/>
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list_comment_article"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
     </LinearLayout>
 
 </ScrollView>

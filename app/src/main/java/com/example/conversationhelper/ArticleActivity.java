@@ -9,11 +9,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.conversationhelper.adapter.CommentAdapter;
+import com.example.conversationhelper.adapter.OnCommentDeletedListener;
 import com.example.conversationhelper.auth.Authentication;
 import com.example.conversationhelper.db.model.Article;
 import com.example.conversationhelper.db.model.Comment;
@@ -25,16 +25,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class ArticleActivity extends AppCompatActivity {
-
+public class ArticleActivity extends AppCompatActivity implements OnCommentDeletedListener {
     private LikeRepository likeRepository;
     private CommentRepository commentRepository;
     private final List<Comment> commentList = new ArrayList<>();
     private CommentAdapter adapter;
     private ImageView like;
-    private TextView countLikeText;
-    private EditText editComment;
-    private int countLike;
+    private TextView countLikeText, editComment, countCommentText;
+    private int countLike, countComment;
     private Article article;
 
     @Override
@@ -52,11 +50,13 @@ public class ArticleActivity extends AppCompatActivity {
         editComment = findViewById(R.id.edit_comment_text);
         like = findViewById(R.id.like_article_button);
         countLikeText = findViewById(R.id.count_like_article);
+        countCommentText = findViewById(R.id.count_comment_article);
 
         if (article != null) {
             title.setText(article.getTitle());
             description.setText(article.getDescription());
             content.setText(article.getContent());
+            editComment.setTag("invisible");
 
             likeRepository = new LikeRepository(FirebaseFirestore.getInstance());
             commentRepository = new CommentRepository(FirebaseFirestore.getInstance());
@@ -78,8 +78,14 @@ public class ArticleActivity extends AppCompatActivity {
                         countLike = likes;
                     });
 
+            commentRepository.getCountCommentByArticleId(article.getId())
+                    .thenAccept(comments -> {
+                        countCommentText.setText(String.valueOf(comments));
+                        countComment = comments;
+                    });
 
-            adapter = new CommentAdapter(this, commentList, FirebaseFirestore.getInstance());
+
+            adapter = new CommentAdapter(this, commentList, FirebaseFirestore.getInstance(), this);
             commentRecyclerView.setAdapter(adapter);
             commentRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -116,5 +122,30 @@ public class ArticleActivity extends AppCompatActivity {
         commentList.add(comment);
         adapter.notifyItemInserted(commentList.size() - 1);
         editComment.setText("");
+
+        countComment++;
+        countCommentText.setText(String.valueOf(countComment));
+    }
+
+    @Override
+    public void onCommentDeleted() {
+        countComment--;
+        countCommentText.setText(String.valueOf(countComment));
+    }
+
+    public void onClickComment(View view) {
+        if (editComment.getTag().equals("visible")) {
+            findViewById(R.id.list_comment_article).setVisibility(View.GONE);
+            findViewById(R.id.title_comments).setVisibility(View.GONE);
+            findViewById(R.id.edit_comment_text).setVisibility(View.GONE);
+            findViewById(R.id.send_comment_button).setVisibility(View.GONE);
+            editComment.setTag("invisible");
+        } else {
+            findViewById(R.id.list_comment_article).setVisibility(View.VISIBLE);
+            findViewById(R.id.title_comments).setVisibility(View.VISIBLE);
+            findViewById(R.id.edit_comment_text).setVisibility(View.VISIBLE);
+            findViewById(R.id.send_comment_button).setVisibility(View.VISIBLE);
+            editComment.setTag("visible");
+        }
     }
 }
