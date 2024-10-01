@@ -42,7 +42,7 @@ public class ChatAdapter extends ArrayAdapter<Chat> {
             name.setText(String.format("%s %s", chat.getDifficulty(), chat.getSpecialization()));
             description.setText(String.format(Locale.getDefault(), "Количество вопросов: %d\nСтатус: %s\nЯзык общения: %s",
                     chat.getNumberQuestions(),
-                    chat.getStatus() == 0 ? "в процессе" : "завершен",
+                    chat.isStatus() ? "завершен" : "в процессе",
                     chat.getLanguage()));
 
             convertView.findViewById(R.id.delete_button).setOnClickListener(view -> {

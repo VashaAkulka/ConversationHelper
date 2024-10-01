@@ -1,6 +1,7 @@
 package com.example.conversationhelper;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,6 +23,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ArticleActivity extends AppCompatActivity {
 
@@ -82,6 +84,7 @@ public class ArticleActivity extends AppCompatActivity {
             commentRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
             DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(commentRecyclerView.getContext(), LinearLayoutManager.VERTICAL);
+            dividerItemDecoration.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(this, R.drawable.divider)));
             commentRecyclerView.addItemDecoration(dividerItemDecoration);
 
             commentRepository.getAllCommentByArticleId(article.getId())

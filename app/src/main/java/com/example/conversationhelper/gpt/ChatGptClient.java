@@ -29,18 +29,21 @@ public class ChatGptClient  {
             List<RequestMessage> messages = new ArrayList<>();
 
             String systemMessage = "Возьми на себя роль технического специалиста "
-                    + chat.getSpecialization() + " специализации, который должен провести технической интервью на "
+                    + chat.getSpecialization() + ", который должен провести технической интервью на "
                     + chat.getLanguage().replace("ий", "ом") + " языке, задай ровно "
-                    + chat.getNumberQuestions() + " вопросов поочереди, после каждого ты должен ждать ответ, уровень квалификации "
-                    + chat.getDifficulty() + "."
-                    + " После всех вопросов ты должен подвести итоги собеседования: количество правильных ответов и советы для улучшения своих навыков.";
+                    + chat.getNumberQuestions() + " вопросов поочереди, после каждого ты должен ждать ответ, уровень квалификации собеседника "
+                    + chat.getDifficulty() + ", подстрой вопросы для его уровня."
+                    + " Будь в меру строгим и не позволяй уходить от темы разговора."
+                    + " После всех вопросов ты должен подвести итоги собеседования точно по этому формату: \"Ваш результат: или Your result: количество правильных ответов/количество вопросов\""
+                    + " Дальше должны идти для каждого неправильного ответа пояснения в чем была допущена ошибка."
+                    + " Закончи все это дополнительными советами для улучшения результатов собеседования.";
 
             messages.add(new RequestMessage("system", systemMessage));
             for (int i = 0; i < historyMessages.size(); i++) {
                 messages.add(new RequestMessage(historyMessages.get(i).getType(), historyMessages.get(i).getContent()));
             }
 
-            String jsonBody = gson.toJson(new ChatRequest("gpt-4-turbo", messages));
+            String jsonBody = gson.toJson(new ChatRequest("gpt-3.5-turbo", messages));
 
             Request request = new Request.Builder()
                     .url("https://api.proxyapi.ru/openai/v1/chat/completions")

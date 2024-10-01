@@ -7,16 +7,6 @@
     tools:context=".SettingChatActivity"
     android:background="@color/background_color">
 
-    <ImageView
-        android:layout_margin="10dp"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:src="@drawable/baseline_arrow_back_24"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:onClick="onClickComeBack"/>
-
-
 
     <LinearLayout
         android:id="@+id/settings"
@@ -29,7 +19,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:orientation="vertical"
-        android:padding="25dp">
+        android:padding="25dp"
+        android:layout_marginBottom="100dp">
 
         <EditText
             android:id="@+id/edit_spec"

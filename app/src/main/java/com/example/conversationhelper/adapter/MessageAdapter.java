@@ -84,7 +84,7 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 
     private void showCustomToast(ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(getContext());
-        View layout = inflater.inflate(R.layout.custom_toast, parent);
+        View layout = inflater.inflate(R.layout.custom_toast, parent, false);
 
         TextView toastMessage = layout.findViewById(R.id.toast_message);
         toastMessage.setText("Текст скопирован");

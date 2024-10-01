@@ -52,8 +52,4 @@ public class SettingChatActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
-
-    public void onClickComeBack(View view) {
-        finish();
-    }
 }

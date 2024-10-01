@@ -15,18 +15,24 @@ import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.example.conversationhelper.adapter.MessageAdapter;
+import com.example.conversationhelper.auth.Authentication;
 import com.example.conversationhelper.db.model.Chat;
 import com.example.conversationhelper.db.model.Message;
+import com.example.conversationhelper.db.repository.ChatRepository;
 import com.example.conversationhelper.db.repository.MessageRepository;
+import com.example.conversationhelper.db.repository.ResultRepository;
 import com.example.conversationhelper.gpt.ChatGptCallback;
 import com.example.conversationhelper.gpt.ChatGptClient;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MessengerActivity extends AppCompatActivity {
 
@@ -36,7 +42,10 @@ public class MessengerActivity extends AppCompatActivity {
     private ListView messageHistory;
     private ActivityResultLauncher<Intent> speechRecognizerLauncher;
     private MessageRepository messageRepository;
+    private ResultRepository resultRepository;
+    private ChatRepository chatRepository;
     private Chat chat;
+    private ImageButton speechButton, sendButton;
 
 
     @Override
@@ -47,9 +56,19 @@ public class MessengerActivity extends AppCompatActivity {
         Intent intent = getIntent();
         chat = (Chat) intent.getSerializableExtra("CHAT");
         messageRepository = new MessageRepository(FirebaseFirestore.getInstance());
+        resultRepository = new ResultRepository(FirebaseFirestore.getInstance());
+        chatRepository = new ChatRepository(FirebaseFirestore.getInstance());
 
         messageHistory = findViewById(R.id.message_history);
         editMessage = findViewById(R.id.edit_message);
+        speechButton = findViewById(R.id.speech_button);
+        sendButton = findViewById(R.id.send_button);
+
+        if (chat.isStatus()) {
+            editMessage.setVisibility(View.GONE);
+            speechButton.setVisibility(View.GONE);
+            sendButton.setVisibility(View.GONE);
+        }
 
         messageRepository.getMessageByChatId(chat.getId())
                         .thenAccept(list -> {
@@ -89,11 +108,27 @@ public class MessengerActivity extends AppCompatActivity {
         ChatGptClient.send(chat, messages, new ChatGptCallback() {
             @Override
             public void onSuccess(String result) {
+                String regex = "(?<=Ваш результат: |Your result: )\\d+";
+                Pattern pattern = Pattern.compile(regex);
+                Matcher matcher = pattern.matcher(result);
+
                 messages.add(messageRepository.addMessage(result, chat.getId(), "assistant"));
 
                 adapter.notifyDataSetChanged();
                 messageHistory.setSelection(adapter.getCount() - 1);
-                editMessage.setEnabled(true);
+
+                if (matcher.find()) {
+                    String numberString = matcher.group();
+                    int number = Integer.parseInt(numberString);
+                    resultRepository.addResult(Authentication.getUser().getId(), chat.getId(), number);
+
+                    chat.setStatus(true);
+                    chatRepository.updateChatStatusById(chat.getId());
+
+                    editMessage.setVisibility(View.GONE);
+                    speechButton.setVisibility(View.GONE);
+                    sendButton.setVisibility(View.GONE);
+                } else editMessage.setEnabled(true);
             }
 
             @Override
@@ -132,6 +167,4 @@ public class MessengerActivity extends AppCompatActivity {
             startSpeechToText();
         }
     }
-
-
 }
