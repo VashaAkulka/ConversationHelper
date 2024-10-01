@@ -63,4 +63,30 @@ public class CommentRepository {
     public void deleteCommentById(String id) {
         commentCollection.document(id).delete();
     }
+
+    public void deleteCommentByArticleId(String id) {
+        commentCollection
+                .whereEqualTo("articleId", id)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            document.getReference().delete();
+                        }
+                    }
+                });
+    }
+
+    public void deleteCommentByUserId(String id) {
+        commentCollection
+                .whereEqualTo("userId", id)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            document.getReference().delete();
+                        }
+                    }
+                });
+    }
 }

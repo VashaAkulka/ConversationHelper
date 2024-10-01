@@ -67,4 +67,39 @@ public class LikeRepository {
         return future;
     }
 
+    public CompletableFuture<Void> deleteLikeByUserId(String userId) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+
+        likeCollection
+                .whereEqualTo("userId", userId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            document.getReference().delete();
+                        }
+                        future.complete(null);
+                    }
+                });
+
+        return future;
+    }
+
+    public CompletableFuture<Void> deleteLikeByArticleId(String articleId) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+
+        likeCollection
+                .whereEqualTo("articleId", articleId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            document.getReference().delete();
+                        }
+                        future.complete(null);
+                    }
+                });
+
+        return future;
+    }
 }

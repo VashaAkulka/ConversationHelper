@@ -12,13 +12,17 @@ import com.google.firebase.storage.StorageReference;
 import java.util.concurrent.CompletableFuture;
 
 public class UserRepository {
-    ChatRepository chatRepository;
+    private final ChatRepository chatRepository;
+    private final ArticleRepository articleRepository;
+    private final LikeRepository likeRepository;
+    private final CommentRepository commentRepository;
     private final CollectionReference usersCollection;
-    private final FirebaseFirestore db;
 
     public UserRepository(FirebaseFirestore db) {
-        this.db = db;
-        chatRepository = new ChatRepository(db);
+        this.articleRepository = new ArticleRepository(db);
+        this.chatRepository = new ChatRepository(db);
+        this.likeRepository = new LikeRepository(db);
+        this.commentRepository = new CommentRepository(db);
         this.usersCollection = db.collection("users");
     }
 
@@ -66,17 +70,12 @@ public class UserRepository {
     }
 
     public void deleteUserById(String id, FirebaseStorage firebaseStorage) {
-        usersCollection.document(id).delete();
-
-        db.collection("chats")
-                .whereEqualTo("userId", id)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            chatRepository.deleteChatById(document.getId());
-                        }
-                    }
+        likeRepository.deleteLikeByUserId(id)
+                .thenAccept(v -> {
+                    chatRepository.deleteChatByUserId(id);
+                    articleRepository.deleteArticleByUserId(id);
+                    commentRepository.deleteCommentByUserId(id);
+                    usersCollection.document(id).delete();
                 });
 
         StorageReference avatarRef = firebaseStorage.getReference().child("avatars/" + id + ".jpg");

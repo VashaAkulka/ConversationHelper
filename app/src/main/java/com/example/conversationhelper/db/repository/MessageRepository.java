@@ -41,9 +41,22 @@ public class MessageRepository {
                             }
                         }
                         future.complete(messageList);
-                    };
+                    }
                 });
 
         return future;
+    }
+
+    public void deleteMessageByChatId(String id) {
+        messageCollection
+                .whereEqualTo("chatId", id)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            document.getReference().delete();
+                        }
+                    }
+                });
     }
 }

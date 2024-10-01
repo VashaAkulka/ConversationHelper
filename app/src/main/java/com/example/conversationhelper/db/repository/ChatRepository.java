@@ -13,11 +13,13 @@ import java.util.concurrent.CompletableFuture;
 
 public class ChatRepository {
     private final CollectionReference chatCollection;
-    private final FirebaseFirestore db;
+    private final MessageRepository messageRepository;
+    private final ResultRepository resultRepository;
 
 
     public ChatRepository(FirebaseFirestore db) {
-        this.db = db;
+        this.messageRepository = new MessageRepository(db);
+        this.resultRepository = new ResultRepository(db);
         this.chatCollection = db.collection("chats");
     }
 
@@ -54,31 +56,24 @@ public class ChatRepository {
 
     public void deleteChatById(String id) {
         chatCollection.document(id).delete();
-
-        db.collection("messages")
-                .whereEqualTo("chatId", id)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            document.getReference().delete();
-                        }
-                    }
-                });
-
-        db.collection("results")
-                .whereEqualTo("chadId", id)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            document.getReference().delete();
-                        }
-                    }
-                });
+        messageRepository.deleteMessageByChatId(id);
+        resultRepository.deleteResultByChatId(id);
     }
 
     public void updateChatStatusById(String id) {
         chatCollection.document(id).update("status", true);
+    }
+
+    public void deleteChatByUserId(String id) {
+        chatCollection
+                .whereEqualTo("userId", id)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            deleteChatById(document.getId());
+                        }
+                    }
+                });
     }
 }

@@ -12,20 +12,29 @@ import java.util.concurrent.CompletableFuture;
 
 public class ArticleRepository {
     private final CollectionReference articleCollection;
+    private final CommentRepository commentRepository;
+    private final LikeRepository likeRepository;
 
     public ArticleRepository(FirebaseFirestore db) {
+        this.commentRepository = new CommentRepository(db);
+        this.likeRepository = new LikeRepository(db);
         this.articleCollection = db.collection("articles");
     }
 
     public void deleteArticleById(String id) {
-        articleCollection.document(id).delete();
+
+        likeRepository.deleteLikeByArticleId(id)
+                .thenAccept(v -> {
+                    commentRepository.deleteCommentByArticleId(id);
+                    articleCollection.document(id).delete();
+        });
     }
 
     public CompletableFuture<List<Article>> getAllArticle() {
         CompletableFuture<List<Article>> future = new CompletableFuture<>();
         List<Article> articleList = new ArrayList<>();
 
-        articleCollection.get()
+        articleCollection.orderBy("createTime").get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
@@ -50,5 +59,18 @@ public class ArticleRepository {
 
     public void updateArticle(Article article) {
         articleCollection.document(article.getId()).set(article);
+    }
+
+    public void deleteArticleByUserId(String id) {
+        articleCollection
+                .whereEqualTo("userId", id)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            deleteArticleById(document.getId());
+                        }
+                    }
+                });
     }
 }
