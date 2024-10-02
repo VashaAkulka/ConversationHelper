@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,11 +28,20 @@ import com.example.conversationhelper.auth.Authentication;
 import com.example.conversationhelper.auth.SharedPreferencesUtil;
 import com.example.conversationhelper.db.model.User;
 import com.example.conversationhelper.db.repository.UserRepository;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 public class ProfileActivity extends AppCompatActivity {
@@ -40,7 +50,6 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView labelName;
     private TextView labelEmail;
     private UserRepository userRepository;
-
     private ActivityResultLauncher<Intent> imagePickerLauncher;
 
     @Override
@@ -79,17 +88,57 @@ public class ProfileActivity extends AppCompatActivity {
                             StorageReference avatarRef = storageReference.child("avatars/" + userId + ".jpg");
 
                             UploadTask uploadTask = avatarRef.putFile(imageUri);
-                            uploadTask.addOnSuccessListener(taskSnapshot -> {
-                                avatarRef.getDownloadUrl().addOnSuccessListener(downloadUri -> {
-                                    String imageUrlString = downloadUri.toString();
+                            uploadTask.addOnSuccessListener(taskSnapshot -> avatarRef.getDownloadUrl().addOnSuccessListener(downloadUri -> {
+                                String imageUrlString = downloadUri.toString();
 
-                                    Authentication.getUser().setAvatar(imageUrlString);
-                                    userRepository.updateUser(Authentication.getUser());
-                                });
-                            });
+                                Authentication.getUser().setAvatar(imageUrlString);
+                                userRepository.updateUser(Authentication.getUser());
+                            }));
                         }
                     }
                 });
+
+        createDiagram();
+    }
+
+    private void createDiagram() {
+        PieChart answerDiagram = findViewById(R.id.answer_stats);
+        ArrayList<PieEntry> answerEntries = new ArrayList<>();
+        answerEntries.add(new PieEntry(50, "Правильно"));
+        answerEntries.add(new PieEntry(10, "Неправильно"));
+        bindDiagram(answerDiagram, answerEntries);
+
+        PieChart completeDiagram = findViewById(R.id.complete_chat_stats);
+        ArrayList<PieEntry> completeEntries = new ArrayList<>();
+        completeEntries.add(new PieEntry(20, "Comple"));
+        completeEntries.add(new PieEntry(30, "Uncomplete"));
+        bindDiagram(completeDiagram, completeEntries);
+    }
+
+    private void bindDiagram(PieChart pieChart, List<PieEntry> entries) {
+        PieDataSet dataSet = new PieDataSet(entries, "Labels");
+        int correctColor = ContextCompat.getColor(pieChart.getContext(), R.color.correct);
+        int incorrectColor = ContextCompat.getColor(pieChart.getContext(), R.color.incorrect);
+        dataSet.setColors(correctColor, incorrectColor);
+        dataSet.setValueTextColor(Color.WHITE);
+        dataSet.setValueTextSize(16f);
+
+        PieData pieData = new PieData(dataSet);
+        pieData.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getPointLabel(Entry entry) {
+                return String.format(Locale.getDefault(), "%.0f", entry.getY());
+            }
+        });
+
+        pieChart.setDescription(null);
+        pieChart.setDrawHoleEnabled(true);
+        pieChart.getLegend().setEnabled(false);
+        pieChart.setHoleColor(Color.TRANSPARENT);
+        pieChart.setData(pieData);
+        pieChart.setEntryLabelTextSize(12f);
+        pieChart.setEntryLabelColor(Color.WHITE);
+        pieChart.invalidate();
     }
 
 

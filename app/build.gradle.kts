@@ -41,6 +41,7 @@ dependencies {
     implementation("com.google.firebase:firebase-storage")
 
     implementation ("com.github.bumptech.glide:glide:4.16.0")
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")

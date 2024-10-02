@@ -76,4 +76,26 @@ public class ChatRepository {
                     }
                 });
     }
+
+    public CompletableFuture<Integer> getCountQuestionByUserId(String id) {
+        CompletableFuture<Integer> future = new CompletableFuture<>();
+
+        chatCollection
+                .whereEqualTo("userId", id)
+                .whereEqualTo("status", true)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        int count = 0;
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Object numberQuestions = document.get("numberQuestions");
+                            if (numberQuestions instanceof Number) {
+                                count += ((Number) numberQuestions).intValue();
+                            }
+                        }
+                        future.complete(count);
+                    }
+                });
+        return future;
+    }
 }

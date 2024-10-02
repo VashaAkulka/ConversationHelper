@@ -6,6 +6,8 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.concurrent.CompletableFuture;
+
 public class ResultRepository {
     private final CollectionReference resultCollection;
 
@@ -30,5 +32,26 @@ public class ResultRepository {
                         }
                     }
                 });
+    }
+
+    public CompletableFuture<Integer> getCountRightAnswerByUserId(String id) {
+        CompletableFuture<Integer> future = new CompletableFuture<>();
+
+        resultCollection
+                .whereEqualTo("userId", id)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        int count = 0;
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Object rightAnswerValue = document.get("rightAnswer");
+                            if (rightAnswerValue instanceof Number) {
+                                count += ((Number) rightAnswerValue).intValue();
+                            }
+                        }
+                        future.complete(count);
+                    }
+                });
+        return future;
     }
 }
