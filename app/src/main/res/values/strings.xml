@@ -32,4 +32,11 @@
     <string name="comments_text">Комментарии:</string>
     <string name="comment_hint">Добавить комментарий</string>
     <string name="show_password">Показать пароль</string>
+    <string name="sort_article_text">Сортировать: </string>
+
+    <string-array name="spinner_sort_article_item">
+        <item>По дате публикации</item>
+        <item>По заголовку</item>
+        <item>По продолжительности</item>
+    </string-array>
 </resources>

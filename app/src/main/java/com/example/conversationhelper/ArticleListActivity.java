@@ -5,7 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Spinner;
 
 import com.example.conversationhelper.adapter.ArticleAdapter;
 import com.example.conversationhelper.auth.Authentication;
@@ -14,6 +17,7 @@ import com.example.conversationhelper.db.repository.ArticleRepository;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class ArticleListActivity extends AppCompatActivity {
@@ -44,6 +48,37 @@ public class ArticleListActivity extends AppCompatActivity {
                 Intent intent = new Intent(ArticleListActivity.this, ArticleActivity.class);
                 intent.putExtra("ARTICLE", selectedArticle);
                 startActivity(intent);
+            }
+        });
+
+        Spinner spinner = findViewById(R.id.spinner_sort_article);
+        ArrayAdapter<CharSequence> adapterSpinner = ArrayAdapter.createFromResource(this, R.array.spinner_sort_article_item, R.layout.custom_spinner_item);
+        adapterSpinner.setDropDownViewResource(R.layout.custom_spinner_item);
+        spinner.setAdapter(adapterSpinner);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String selectedItem = adapterView.getItemAtPosition(i).toString();
+
+                switch (selectedItem) {
+                    case "По дате публикации" :
+                        articleList.sort(Comparator.comparing(Article::getCreateTime));
+                        break;
+                    case "По заголовку" :
+                        articleList.sort(Comparator.comparing(Article::getTitle));
+                        break;
+                    case "По продолжительности" :
+                        articleList.sort(Comparator.comparingInt(ar -> ar.getContent().length()));
+                        break;
+                }
+
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
             }
         });
     }
