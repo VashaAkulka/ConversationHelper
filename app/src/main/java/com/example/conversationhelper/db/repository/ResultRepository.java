@@ -1,18 +1,24 @@
 package com.example.conversationhelper.db.repository;
 
+import com.example.conversationhelper.db.model.Chat;
 import com.example.conversationhelper.db.model.Result;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class ResultRepository {
     private final CollectionReference resultCollection;
+    private final FirebaseFirestore db;
 
     public ResultRepository(FirebaseFirestore db) {
-        resultCollection = db.collection("results");
+        this.db = db;
+        this.resultCollection = db.collection("results");
     }
 
     public void addResult(String userId, String chatId, int rightAnswer) {
@@ -54,4 +60,51 @@ public class ResultRepository {
                 });
         return future;
     }
+
+    public CompletableFuture<List<Float>> getTimeByUserId(String id) {
+        CompletableFuture<List<Float>> future = new CompletableFuture<>();
+        List<Float> list = new ArrayList<>();
+
+        resultCollection
+                .whereEqualTo("userId", id)
+                .get()
+                .addOnCompleteListener(resultTask -> {
+                    if (resultTask.isSuccessful()) {
+                        List<Result> results = new ArrayList<>();
+                        for (QueryDocumentSnapshot resultDocument : resultTask.getResult()) {
+                            Result result = resultDocument.toObject(Result.class);
+                            results.add(result);
+                        }
+                        results.sort(Comparator.comparing(Result::getEndTime));
+
+                        List<CompletableFuture<Void>> futures = new ArrayList<>();
+
+                        for (Result result : results) {
+                            CompletableFuture<Void> chatFuture = new CompletableFuture<>();
+                            futures.add(chatFuture);
+
+                            db.collection("chats")
+                                    .whereEqualTo("id", result.getChatId())
+                                    .get()
+                                    .addOnCompleteListener(chatTask -> {
+                                        if (chatTask.isSuccessful()) {
+                                            for (QueryDocumentSnapshot chatDocument : chatTask.getResult()) {
+                                                Chat chat = chatDocument.toObject(Chat.class);
+                                                long sec = result.getEndTime().getSeconds() - chat.getStartTime().getSeconds();
+                                                list.add(sec / 3600.0f);
+                                            }
+                                        }
+                                        chatFuture.complete(null);
+                                    });
+                        }
+
+                        CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+                        allFutures.thenRun(() -> future.complete(list));
+                    }
+                });
+
+        return future;
+    }
+
+
 }

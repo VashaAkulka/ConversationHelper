@@ -1,6 +1,8 @@
 package com.example.conversationhelper.db.repository;
 
 
+import android.util.Pair;
+
 import com.example.conversationhelper.db.model.Chat;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
@@ -96,6 +98,31 @@ public class ChatRepository {
                         future.complete(count);
                     }
                 });
+        return future;
+    }
+
+    public CompletableFuture<Pair<Integer, Integer>> getCountCompleteChat(String userId) {
+        CompletableFuture<Pair<Integer, Integer>> future = new CompletableFuture<>();
+
+        chatCollection
+                .whereEqualTo("userId", userId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        int complete = 0;
+                        int notComplete = 0;
+
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Boolean status = document.getBoolean("status");
+                            if (status == null) continue;
+                            if (status) complete++;
+                            else notComplete++;
+                        }
+
+                        future.complete(new Pair<>(complete, notComplete));
+                    }
+                });
+
         return future;
     }
 }

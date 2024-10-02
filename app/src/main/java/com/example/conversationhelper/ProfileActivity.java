@@ -27,9 +27,15 @@ import com.bumptech.glide.Glide;
 import com.example.conversationhelper.auth.Authentication;
 import com.example.conversationhelper.auth.SharedPreferencesUtil;
 import com.example.conversationhelper.db.model.User;
+import com.example.conversationhelper.db.repository.ChatRepository;
+import com.example.conversationhelper.db.repository.ResultRepository;
 import com.example.conversationhelper.db.repository.UserRepository;
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
@@ -50,6 +56,8 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView labelName;
     private TextView labelEmail;
     private UserRepository userRepository;
+    private ResultRepository resultRepository;
+    private ChatRepository chatRepository;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
 
     @Override
@@ -60,6 +68,8 @@ public class ProfileActivity extends AppCompatActivity {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageReference = storage.getReference();
         userRepository = new UserRepository(FirebaseFirestore.getInstance());
+        resultRepository = new ResultRepository(FirebaseFirestore.getInstance());
+        chatRepository = new ChatRepository(FirebaseFirestore.getInstance());
 
         avatar = findViewById(R.id.image_avatar);
         labelName = findViewById(R.id.profile_name);
@@ -98,47 +108,114 @@ public class ProfileActivity extends AppCompatActivity {
                     }
                 });
 
-        createDiagram();
+        createPieDiagram();
+        createBarDiagram();
     }
 
-    private void createDiagram() {
+    private void createBarDiagram() {
+        BarChart barChart = findViewById(R.id.time_stats);
+        ArrayList<BarEntry> barEntries = new ArrayList<>();
+
+        resultRepository.getTimeByUserId(Authentication.getUser().getId())
+                        .thenAccept(timeList -> {
+                            for (int i = 0; i < timeList.size(); i++) {
+                                barEntries.add(new BarEntry(i + 1, timeList.get(i)));
+                            }
+                            bindBarDiagram(barEntries, barChart);
+                        });
+    }
+
+    private void bindBarDiagram(ArrayList<BarEntry> barEntries, BarChart barChart) {
+        int barColor = ContextCompat.getColor(this, R.color.message_background_color);
+        int textColor = ContextCompat.getColor(this, R.color.text_color);
+
+        BarDataSet barDataSet = new BarDataSet(barEntries, "Sample Data");
+        barDataSet.setColor(barColor);
+        barDataSet.setValueTextColor(textColor);
+        barDataSet.setValueTextSize(14f);
+
+        BarData barData = new BarData(barDataSet);
+        barChart.setData(barData);
+
+        YAxis leftAxis = barChart.getAxisLeft();
+        leftAxis.setTextSize(12f);
+        leftAxis.setTextColor(textColor);
+
+        barChart.setDescription(null);
+        barChart.getLegend().setEnabled(false);
+        barChart.setScaleEnabled(false);
+        barChart.setDoubleTapToZoomEnabled(false);
+        barChart.getXAxis().setDrawGridLines(false);
+        barChart.getAxisRight().setDrawGridLines(false);
+        barChart.getXAxis().setDrawAxisLine(false);
+        barChart.getAxisLeft().setDrawAxisLine(false);
+        barChart.getAxisRight().setEnabled(false);
+        barChart.getXAxis().setEnabled(false);
+        barChart.animateY(3000);
+        barChart.invalidate();
+
+        barChart.setVisibility(View.VISIBLE);
+    }
+
+    private void createPieDiagram() {
         PieChart answerDiagram = findViewById(R.id.answer_stats);
         ArrayList<PieEntry> answerEntries = new ArrayList<>();
-        answerEntries.add(new PieEntry(50, "Правильно"));
-        answerEntries.add(new PieEntry(10, "Неправильно"));
-        bindDiagram(answerDiagram, answerEntries);
+        resultRepository.getCountRightAnswerByUserId(Authentication.getUser().getId())
+                        .thenAccept(countRight -> {
+                            answerEntries.add(new PieEntry(countRight, "Правильно"));
 
-        PieChart completeDiagram = findViewById(R.id.complete_chat_stats);
-        ArrayList<PieEntry> completeEntries = new ArrayList<>();
-        completeEntries.add(new PieEntry(20, "Comple"));
-        completeEntries.add(new PieEntry(30, "Uncomplete"));
-        bindDiagram(completeDiagram, completeEntries);
+                            chatRepository.getCountQuestionByUserId(Authentication.getUser().getId())
+                                    .thenAccept(countQuestion -> {
+                                        answerEntries.add(new PieEntry(countQuestion, "Неправильно"));
+                                        bindPieDiagram(answerDiagram, answerEntries, "Ответы");
+                                    });
+                        });
+
+
+        PieChart chatDiagram = findViewById(R.id.complete_chat_stats);
+        ArrayList<PieEntry> chatEntries = new ArrayList<>();
+        chatRepository.getCountCompleteChat(Authentication.getUser().getId())
+                .thenAccept(pair -> {
+                    chatEntries.add(new PieEntry(pair.first, "Завершены"));
+                    chatEntries.add(new PieEntry(pair.second, "В процессе"));
+
+                    bindPieDiagram(chatDiagram, chatEntries, "Чаты");
+                });
+
     }
 
-    private void bindDiagram(PieChart pieChart, List<PieEntry> entries) {
+    private void bindPieDiagram(PieChart pieChart, List<PieEntry> entries, String text) {
         PieDataSet dataSet = new PieDataSet(entries, "Labels");
-        int correctColor = ContextCompat.getColor(pieChart.getContext(), R.color.correct);
-        int incorrectColor = ContextCompat.getColor(pieChart.getContext(), R.color.incorrect);
+        int correctColor = ContextCompat.getColor(this, R.color.correct);
+        int incorrectColor = ContextCompat.getColor(this, R.color.incorrect);
+        int textColor = ContextCompat.getColor(this, R.color.text_color);
         dataSet.setColors(correctColor, incorrectColor);
-        dataSet.setValueTextColor(Color.WHITE);
-        dataSet.setValueTextSize(16f);
+        dataSet.setValueTextColor(textColor);
+        dataSet.setValueTextSize(14f);
 
         PieData pieData = new PieData(dataSet);
         pieData.setValueFormatter(new ValueFormatter() {
             @Override
-            public String getPointLabel(Entry entry) {
-                return String.format(Locale.getDefault(), "%.0f", entry.getY());
+            public String getFormattedValue(float value) {
+                return String.format(Locale.getDefault(), "%.0f", value);
             }
         });
 
+
         pieChart.setDescription(null);
+        pieChart.setCenterText(text);
+        pieChart.setCenterTextColor(textColor);
+        pieChart.setCenterTextSize(14f);
         pieChart.setDrawHoleEnabled(true);
+        pieChart.setTransparentCircleRadius(0f);
         pieChart.getLegend().setEnabled(false);
         pieChart.setHoleColor(Color.TRANSPARENT);
         pieChart.setData(pieData);
         pieChart.setEntryLabelTextSize(12f);
-        pieChart.setEntryLabelColor(Color.WHITE);
+        pieChart.setEntryLabelColor(textColor);
         pieChart.invalidate();
+
+        pieChart.setVisibility(View.VISIBLE);
     }
 
 

@@ -8,6 +8,6 @@
     <color name="message_background_color">#2f2f2f</color>
     <color name="assist_message_background_color">#3A3A3A</color>
     <color name="error_message">#CF1010</color>
-    <color name="correct">#85FB80</color>
-    <color name="incorrect">#FD5656</color>
+    <color name="correct">#454545</color>
+    <color name="incorrect">#2f2f2f</color>
 </resources>
