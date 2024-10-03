@@ -148,4 +148,8 @@ public class ArticleActivity extends AppCompatActivity implements OnCommentDelet
             editComment.setTag("visible");
         }
     }
+
+    public void onClickBackActivity(View view) {
+        finish();
+    }
 }

@@ -102,4 +102,8 @@ public class ArticleListActivity extends AppCompatActivity {
         Intent intent = new Intent(ArticleListActivity.this, SettingArticleActivity.class);
         startActivity(intent);
     }
+
+    public void onClickBackActivity(View view) {
+        finish();
+    }
 }

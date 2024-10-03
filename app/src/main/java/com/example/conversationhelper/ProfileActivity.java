@@ -9,6 +9,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -16,11 +17,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -54,8 +57,7 @@ import java.util.regex.Pattern;
 public class ProfileActivity extends AppCompatActivity {
 
     private ImageView avatar;
-    private TextView labelName;
-    private TextView labelEmail;
+    private TextView labelName, labelEmail;
     private UserRepository userRepository;
     private ResultRepository resultRepository;
     private ChatRepository chatRepository;
@@ -146,6 +148,12 @@ public class ProfileActivity extends AppCompatActivity {
         barDataSet.setValueTextSize(14f);
 
         BarData barData = new BarData(barDataSet);
+        barData.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return String.format(Locale.getDefault(), "%.1f", value);
+            }
+        });
         barChart.setData(barData);
 
         YAxis leftAxis = barChart.getAxisLeft();
@@ -167,6 +175,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         barChart.setVisibility(View.VISIBLE);
         findViewById(R.id.bar_chart_title).setVisibility(View.VISIBLE);
+        findViewById(R.id.profile_place_holder).setVisibility(View.GONE);
     }
 
     private void createPieDiagram() {
@@ -197,7 +206,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void bindPieDiagram(PieChart pieChart, List<PieEntry> entries, String text) {
-        if (entries.isEmpty()) return;
+        if (entries.get(0).getValue() == 0 && entries.get(1).getValue() == 0) return;
 
         PieDataSet dataSet = new PieDataSet(entries, "Labels");
         int correctColor = ContextCompat.getColor(this, R.color.correct);
@@ -215,7 +224,6 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-
         pieChart.setDescription(null);
         pieChart.setCenterText(text);
         pieChart.setCenterTextColor(textColor);
@@ -229,6 +237,7 @@ public class ProfileActivity extends AppCompatActivity {
         pieChart.setEntryLabelColor(textColor);
         pieChart.invalidate();
 
+        findViewById(R.id.profile_place_holder).setVisibility(View.GONE);
         pieChart.setVisibility(View.VISIBLE);
     }
 
@@ -264,9 +273,7 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
-    public void onClickProfileButton(View view) {
-        String text = R.id.delete_user_button == view.getId() ? "удалить" : "сменить";
-
+    public void profileButton(String text) {
         new AlertDialog.Builder(this, R.style.CustomAlertDialogTheme)
                 .setTitle("Подтверждение")
                 .setMessage("Вы уверены, что хотите " + text + " пользователя?")
@@ -287,7 +294,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
 
-    public void onClickUpdateUserData(View view) {
+    public void updateUserData() {
         LayoutInflater inflater = LayoutInflater.from(this);
         View dialogView = inflater.inflate(R.layout.dialog_update_user, null);
 
@@ -347,5 +354,28 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         dialog.show();
+    }
+
+    public void onClickPopupMenu(View view) {
+        Context wrapper = new ContextThemeWrapper(this, R.style.CustomPopupMenu);
+        PopupMenu popupMenu = new PopupMenu(wrapper, view);
+        popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
+
+        popupMenu.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.option1) {
+                profileButton("сменить");
+            } else if (item.getItemId() == R.id.option2) {
+                updateUserData();
+            } else if (item.getItemId() == R.id.option3) {
+                profileButton("удалить");
+            }
+            return true;
+        });
+
+        popupMenu.show();
+    }
+
+    public void onClickBackActivity(View view) {
+        finish();
     }
 }

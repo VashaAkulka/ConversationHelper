@@ -7,6 +7,14 @@
     tools:context=".SettingChatActivity"
     android:background="@color/background_color">
 
+    <ImageView
+        android:src="@drawable/baseline_arrow_back_24"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_margin="10dp"
+        android:onClick="onClickBackActivity" />
 
     <LinearLayout
         android:id="@+id/settings"

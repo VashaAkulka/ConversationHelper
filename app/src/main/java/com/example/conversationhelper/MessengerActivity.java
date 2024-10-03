@@ -167,4 +167,8 @@ public class MessengerActivity extends AppCompatActivity {
             startSpeechToText();
         }
     }
+
+    public void onClickBackActivity(View view) {
+        finish();
+    }
 }

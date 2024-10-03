@@ -52,4 +52,8 @@ public class SettingChatActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
+
+    public void onClickBackActivity(View view) {
+        finish();
+    }
 }
