@@ -24,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.conversationhelper.auth.Authentication;
 import com.example.conversationhelper.auth.SharedPreferencesUtil;
 import com.example.conversationhelper.db.model.User;
@@ -83,6 +84,9 @@ public class ProfileActivity extends AppCompatActivity {
 
             Glide.with(this)
                     .load(avatarUrlString)
+                    .apply(new RequestOptions()
+                            .centerCrop()
+                            .circleCrop())
                     .into(avatar);
         }
 
@@ -92,7 +96,12 @@ public class ProfileActivity extends AppCompatActivity {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         Uri imageUri = result.getData().getData();
                         if (imageUri != null) {
-                            avatar.setImageURI(imageUri);
+                            Glide.with(this)
+                                    .load(imageUri)
+                                    .apply(new RequestOptions()
+                                            .centerCrop()
+                                            .circleCrop())
+                                    .into(avatar);
 
                             String userId = Authentication.getUser().getId();
                             StorageReference avatarRef = storageReference.child("avatars/" + userId + ".jpg");
@@ -126,6 +135,8 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void bindBarDiagram(ArrayList<BarEntry> barEntries, BarChart barChart) {
+        if (barEntries.isEmpty()) return;
+
         int barColor = ContextCompat.getColor(this, R.color.message_background_color);
         int textColor = ContextCompat.getColor(this, R.color.text_color);
 
@@ -155,6 +166,7 @@ public class ProfileActivity extends AppCompatActivity {
         barChart.invalidate();
 
         barChart.setVisibility(View.VISIBLE);
+        findViewById(R.id.bar_chart_title).setVisibility(View.VISIBLE);
     }
 
     private void createPieDiagram() {
@@ -185,6 +197,8 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void bindPieDiagram(PieChart pieChart, List<PieEntry> entries, String text) {
+        if (entries.isEmpty()) return;
+
         PieDataSet dataSet = new PieDataSet(entries, "Labels");
         int correctColor = ContextCompat.getColor(this, R.color.correct);
         int incorrectColor = ContextCompat.getColor(this, R.color.incorrect);
@@ -251,15 +265,25 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     public void onClickProfileButton(View view) {
-        if (R.id.delete_user_button == view.getId()) userRepository.deleteUserById(Authentication.getUser().getId(), FirebaseStorage.getInstance());
-        Intent intent = new Intent(ProfileActivity.this, RegistrationActivity.class);
+        String text = R.id.delete_user_button == view.getId() ? "удалить" : "сменить";
 
-        SharedPreferencesUtil sharedPreferencesUtil = new SharedPreferencesUtil(this);
-        sharedPreferencesUtil.deleteUser();
+        new AlertDialog.Builder(this, R.style.CustomAlertDialogTheme)
+                .setTitle("Подтверждение")
+                .setMessage("Вы уверены, что хотите " + text + " пользователя?")
+                .setPositiveButton("Да", (dialogInterface, i) -> {
+                    if (text.equals("удалить")) userRepository.deleteUserById(Authentication.getUser().getId(), FirebaseStorage.getInstance());
 
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
+                    Intent intent = new Intent(ProfileActivity.this, RegistrationActivity.class);
+
+                    SharedPreferencesUtil sharedPreferencesUtil = new SharedPreferencesUtil(this);
+                    sharedPreferencesUtil.deleteUser();
+
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                })
+                .setNegativeButton("Нет", (dialogInterface, i) -> dialogInterface.dismiss())
+                .show();
     }
 
 
@@ -294,25 +318,31 @@ public class ProfileActivity extends AppCompatActivity {
                 String emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
                 if (!Pattern.compile(emailPattern).matcher(newEmail).matches()) {
                     errorText.setText("Неправильныый формат электроной почты");
-                } else {
-                    User user = Authentication.getUser();
-                    User newUser = new User(user.getId(), user.getRole(), newName, newPassword, newEmail, user.getAvatar());
-
-                    userRepository.updateUser(newUser)
-                            .thenAccept(aBoolean -> {
-                                if (aBoolean || newUser.getName().equals(user.getName())) {
-                                    user.setName(newName);
-                                    user.setEmail(newEmail);
-                                    user.setPassword(newPassword);
-
-                                    labelName.setText(Authentication.getUser().getName());
-                                    labelEmail.setText(Authentication.getUser().getEmail());
-                                    dialog.dismiss();
-                                } else {
-                                    errorText.setText("Такой пользователь уже существует");
-                                }
-                            });
+                    return;
                 }
+
+                if (newPassword.length() < 6) {
+                    errorText.setText("Слишком легкий пароль");
+                    return;
+                }
+
+                User user = Authentication.getUser();
+                User newUser = new User(user.getId(), user.getRole(), newName, newPassword, newEmail, user.getAvatar());
+
+                userRepository.updateUser(newUser)
+                        .thenAccept(aBoolean -> {
+                            if (aBoolean || newUser.getName().equals(user.getName())) {
+                                user.setName(newName);
+                                user.setEmail(newEmail);
+                                user.setPassword(newPassword);
+
+                                labelName.setText(Authentication.getUser().getName());
+                                labelEmail.setText(Authentication.getUser().getEmail());
+                                dialog.dismiss();
+                            } else {
+                                errorText.setText("Такой пользователь уже существует");
+                            }
+                        });
             });
         });
 

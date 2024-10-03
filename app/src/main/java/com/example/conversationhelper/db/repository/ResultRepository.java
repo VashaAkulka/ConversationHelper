@@ -8,6 +8,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -29,7 +30,7 @@ public class ResultRepository {
 
     public void deleteResultByChatId(String id) {
         resultCollection
-                .whereEqualTo("chadId", id)
+                .whereEqualTo("chatId", id)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -63,7 +64,6 @@ public class ResultRepository {
 
     public CompletableFuture<List<Float>> getTimeByUserId(String id) {
         CompletableFuture<List<Float>> future = new CompletableFuture<>();
-        List<Float> list = new ArrayList<>();
 
         resultCollection
                 .whereEqualTo("userId", id)
@@ -77,11 +77,15 @@ public class ResultRepository {
                         }
                         results.sort(Comparator.comparing(Result::getEndTime));
 
+                        List<Float> list = new ArrayList<>(Collections.nCopies(results.size(), 0f));
                         List<CompletableFuture<Void>> futures = new ArrayList<>();
 
-                        for (Result result : results) {
+                        for (int index = 0; index < results.size(); index++) {
+                            Result result = results.get(index);
                             CompletableFuture<Void> chatFuture = new CompletableFuture<>();
                             futures.add(chatFuture);
+
+                            final int currentIndex = index;
 
                             db.collection("chats")
                                     .whereEqualTo("id", result.getChatId())
@@ -91,7 +95,8 @@ public class ResultRepository {
                                             for (QueryDocumentSnapshot chatDocument : chatTask.getResult()) {
                                                 Chat chat = chatDocument.toObject(Chat.class);
                                                 long sec = result.getEndTime().getSeconds() - chat.getStartTime().getSeconds();
-                                                list.add(sec / 3600.0f);
+
+                                                list.set(currentIndex, sec / 3600.0f);
                                             }
                                         }
                                         chatFuture.complete(null);

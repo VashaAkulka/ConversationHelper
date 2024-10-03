@@ -43,7 +43,7 @@ public class ChatGptClient  {
                 messages.add(new RequestMessage(historyMessages.get(i).getType(), historyMessages.get(i).getContent()));
             }
 
-            String jsonBody = gson.toJson(new ChatRequest("gpt-3.5-turbo", messages));
+            String jsonBody = gson.toJson(new ChatRequest("gpt-4-turbo", messages));
 
             Request request = new Request.Builder()
                     .url("https://api.proxyapi.ru/openai/v1/chat/completions")

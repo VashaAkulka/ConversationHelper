@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.conversationhelper.R;
 import com.example.conversationhelper.auth.Authentication;
 import com.example.conversationhelper.db.model.Comment;
@@ -91,8 +92,12 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
             userName.setText(user.getName());
 
             if (user.getAvatar() != null) {
+
                 Glide.with(itemView.getContext())
                         .load(user.getAvatar())
+                        .apply(new RequestOptions()
+                                .centerCrop()
+                                .circleCrop())
                         .into(avatar);
             }
 
