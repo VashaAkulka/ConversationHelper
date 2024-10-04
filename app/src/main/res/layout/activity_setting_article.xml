@@ -87,7 +87,24 @@
         android:textColor="@color/text_color"
         android:gravity="start|top"
         android:background="@drawable/edit_text_border_background"
-        android:autofillHints="name"/>
+        android:autofillHints="name"
+        android:layout_marginBottom="9dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:onClick="onClickAddArticlePhoto"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/baseline_add_photo_alternate_24" />
+        <TextView
+            android:id="@+id/photo_article_setting"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center|start"
+            android:textColor="@color/text_color"/>
+    </LinearLayout>
 
     <Button
         android:id="@+id/save_update_article_button"

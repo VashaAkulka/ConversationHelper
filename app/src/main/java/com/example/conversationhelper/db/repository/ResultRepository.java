@@ -22,10 +22,10 @@ public class ResultRepository {
         this.resultCollection = db.collection("results");
     }
 
-    public void addResult(String userId, String chatId, int rightAnswer) {
+    public void addResult(String userId, String chatId, int rightAnswer, boolean success) {
         String id = resultCollection.document().getId();
         Timestamp endTime = Timestamp.now();
-        resultCollection.document(id).set(new Result(id, chatId, userId, endTime, rightAnswer));
+        resultCollection.document(id).set(new Result(id, chatId, userId, success, endTime, rightAnswer));
     }
 
     public void deleteResultByChatId(String id) {
@@ -112,4 +112,20 @@ public class ResultRepository {
     }
 
 
+    public CompletableFuture<Boolean> getSuccessByChatId(String id) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+
+        resultCollection
+                .whereEqualTo("chatId", id)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Boolean success = document.getBoolean("success");
+                            future.complete(success);
+                        }
+                    }
+                });
+        return future;
+    }
 }

@@ -5,6 +5,8 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +29,8 @@ public class ArticleRepository {
                 .thenAccept(v -> {
                     commentRepository.deleteCommentByArticleId(id);
                     articleCollection.document(id).delete();
+                    StorageReference photoRef = FirebaseStorage.getInstance().getReference().child("articles/" + id + ".jpg");
+                    photoRef.delete();
         });
     }
 
@@ -48,11 +52,11 @@ public class ArticleRepository {
         return future;
     }
 
-    public Article addArticle(String title, String description, String content, String userId) {
+    public Article addArticle(String title, String description, String content, String userId, String photo) {
         String articleId = articleCollection.document().getId();
         Timestamp createTime = Timestamp.now();
 
-        Article article = new Article(articleId, userId, title, description, content, createTime);
+        Article article = new Article(articleId, userId, title, description, content, photo, createTime);
         articleCollection.document(articleId).set(article);
         return article;
     }

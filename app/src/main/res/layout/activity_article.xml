@@ -36,7 +36,14 @@
             android:layout_height="wrap_content"
             android:textColor="@color/text_color"
             android:textStyle="italic"
-            android:layout_marginBottom="40dp" />
+            android:layout_marginBottom="15dp"/>
+
+        <ImageView
+            android:id="@+id/article_photo"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_marginBottom="40dp"
+            android:visibility="gone"/>
 
         <TextView
             android:id="@+id/content_article"

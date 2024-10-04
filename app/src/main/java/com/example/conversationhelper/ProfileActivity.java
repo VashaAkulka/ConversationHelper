@@ -384,6 +384,7 @@ public class ProfileActivity extends AppCompatActivity {
                 User newUser = new User(user.getId(), user.getRole(), user.getName(), newPassword, user.getEmail(), user.getAvatar());
                 userRepository.updateUser(newUser)
                         .thenAccept(aBoolean -> user.setPassword(newPassword));
+                dialog.dismiss();
             });
         });
 

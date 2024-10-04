@@ -55,12 +55,18 @@ public class MessageAdapter extends ArrayAdapter<Message> {
                 messageText.setBackgroundResource(R.drawable.round_chatgpt_message);
 
                 timeParams.gravity = Gravity.END;
-            } else {
+            } else if (message.getType().equals("assistant")) {
                 textParams.gravity = Gravity.START;
                 textParams.setMargins(0, 0, marginInPx, 0);
                 messageText.setBackgroundResource(R.drawable.round_user_message);
 
                 timeParams.gravity = Gravity.START;
+            } else {
+                textParams.gravity = Gravity.END;
+                textParams.setMargins(marginInPx, 0, 0, 0);
+                messageText.setBackgroundResource(R.drawable.round_error_message);
+
+                timeParams.gravity = Gravity.END;
             }
 
             messageText.setLayoutParams(textParams);

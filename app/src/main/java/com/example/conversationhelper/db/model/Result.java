@@ -6,13 +6,15 @@ public class Result {
     private String id;
     private String chatId;
     private String userId;
+    private boolean success;
     private Timestamp endTime;
     private int rightAnswer;
 
-    public Result(String id, String chatId, String userId, Timestamp endTime, int rightAnswer) {
+    public Result(String id, String chatId, String userId, boolean success, Timestamp endTime, int rightAnswer) {
         this.id = id;
         this.chatId = chatId;
         this.userId = userId;
+        this.success = success;
         this.endTime = endTime;
         this.rightAnswer = rightAnswer;
     }
@@ -58,5 +60,13 @@ public class Result {
 
     public void setRightAnswer(int rightAnswer) {
         this.rightAnswer = rightAnswer;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
     }
 }

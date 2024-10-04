@@ -12,6 +12,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.conversationhelper.adapter.CommentAdapter;
 import com.example.conversationhelper.adapter.OnCommentDeletedListener;
 import com.example.conversationhelper.auth.Authentication;
@@ -51,11 +54,24 @@ public class ArticleActivity extends AppCompatActivity implements OnCommentDelet
         like = findViewById(R.id.like_article_button);
         countLikeText = findViewById(R.id.count_like_article);
         countCommentText = findViewById(R.id.count_comment_article);
+        ImageView photo = findViewById(R.id.article_photo);
 
         if (article != null) {
             title.setText(article.getTitle());
             description.setText(article.getDescription());
             content.setText(article.getContent());
+
+            if (article.getPhoto() != null) {
+                Glide.with(this)
+                        .load(article.getPhoto())
+                        .apply(new RequestOptions()
+                                .centerCrop()
+                                .transform(new RoundedCorners(30)))
+                        .into(photo);
+
+                photo.setVisibility(View.VISIBLE);
+            }
+
             editComment.setTag("invisible");
 
             likeRepository = new LikeRepository(FirebaseFirestore.getInstance());

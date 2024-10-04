@@ -108,19 +108,28 @@ public class MessengerActivity extends AppCompatActivity {
         ChatGptClient.send(chat, messages, new ChatGptCallback() {
             @Override
             public void onSuccess(String result) {
-                String regex = "(?<=Ваш результат: |Your result: )\\d+";
-                Pattern pattern = Pattern.compile(regex);
-                Matcher matcher = pattern.matcher(result);
+                String regexResult = "(?<=Ваш результат: |Your result: )\\d+";
+                String regexStatus = "(Пройдено успешно|Пройдено неудачно|Passed successfully|Passed unsuccessfully)";
+
+                Pattern patternResult = Pattern.compile(regexResult);
+                Matcher matcherResult = patternResult.matcher(result);
+
+                Pattern patternStatus = Pattern.compile(regexStatus);
+                Matcher matcherStatus = patternStatus.matcher(result);
 
                 messages.add(messageRepository.addMessage(result, chat.getId(), "assistant"));
 
                 adapter.notifyDataSetChanged();
                 messageHistory.setSelection(adapter.getCount() - 1);
 
-                if (matcher.find()) {
-                    String numberString = matcher.group();
+                if (matcherResult.find() && matcherStatus.find()) {
+                    String numberString = matcherResult.group();
                     int number = Integer.parseInt(numberString);
-                    resultRepository.addResult(Authentication.getUser().getId(), chat.getId(), number);
+
+                    String status = matcherStatus.group();
+                    boolean isSuccessful = status.equals("Пройдено успешно") || status.equals("Passed successfully");
+
+                    resultRepository.addResult(Authentication.getUser().getId(), chat.getId(), number, isSuccessful);
 
                     chat.setStatus(true);
                     chatRepository.updateChatStatusById(chat.getId());
@@ -136,8 +145,11 @@ public class MessengerActivity extends AppCompatActivity {
                 if (retries > 0) {
                     sendMessageWithRetries(chat, messages, retries - 1);
                 } else {
-                    editMessage.setText("Ошибка: Соединение устройства не устойчивое, повторите попытку");
+                    int size = messages.size() - 1;
+                    messages.get(size).setContent("Ошибка соединения, пожалуйста повторите попытку чуть позже");
+                    messages.get(size).setType("error");
                     editMessage.setEnabled(true);
+                    adapter.notifyDataSetChanged();
                 }
             }
         });

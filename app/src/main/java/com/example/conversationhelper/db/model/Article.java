@@ -10,14 +10,16 @@ public class Article implements Serializable {
     private String title;
     private String description;
     private String content;
+    private String photo;
     private transient Timestamp createTime;
 
-    public Article(String id, String userId, String title, String description, String content, Timestamp createTime) {
+    public Article(String id, String userId, String title, String description, String content, String photo, Timestamp createTime) {
         this.id = id;
         this.userId = userId;
         this.title = title;
         this.description = description;
         this.content = content;
+        this.photo = photo;
         this.createTime = createTime;
     }
 
@@ -70,5 +72,13 @@ public class Article implements Serializable {
 
     public void setCreateTime(Timestamp createTime) {
         this.createTime = createTime;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 }
