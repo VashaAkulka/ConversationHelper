@@ -6,6 +6,9 @@
         android:id="@+id/option2"
         android:title="@string/change_profile_data"/>
     <item
+        android:id="@+id/option4"
+        android:title="@string/change_password_profile"/>
+    <item
         android:id="@+id/option3"
         android:title="@string/delete_profile"/>
 </menu>

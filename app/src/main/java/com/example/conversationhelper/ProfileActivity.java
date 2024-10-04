@@ -273,7 +273,7 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
-    public void profileButton(String text) {
+    private void profileButton(String text) {
         new AlertDialog.Builder(this, R.style.CustomAlertDialogTheme)
                 .setTitle("Подтверждение")
                 .setMessage("Вы уверены, что хотите " + text + " пользователя?")
@@ -294,19 +294,17 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
 
-    public void updateUserData() {
+    private void updateUserData() {
         LayoutInflater inflater = LayoutInflater.from(this);
         View dialogView = inflater.inflate(R.layout.dialog_update_user, null);
 
         EditText editTextName = dialogView.findViewById(R.id.editTextName);
         EditText editTextEmail = dialogView.findViewById(R.id.editTextEmail);
-        EditText editTextPassword = dialogView.findViewById(R.id.editTextPass);
 
         TextView errorText = dialogView.findViewById(R.id.dialog_error);
 
         editTextName.setText(Authentication.getUser().getName());
         editTextEmail.setText(Authentication.getUser().getEmail());
-        editTextPassword.setText(Authentication.getUser().getPassword());
 
         AlertDialog dialog = new AlertDialog.Builder(this, R.style.CustomAlertDialogTheme)
                 .setTitle("Смена личных данных")
@@ -320,7 +318,6 @@ public class ProfileActivity extends AppCompatActivity {
             positiveButton.setOnClickListener(newView -> {
                 String newName = editTextName.getText().toString();
                 String newEmail = editTextEmail.getText().toString();
-                String newPassword = editTextPassword.getText().toString();
 
                 String emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
                 if (!Pattern.compile(emailPattern).matcher(newEmail).matches()) {
@@ -328,20 +325,14 @@ public class ProfileActivity extends AppCompatActivity {
                     return;
                 }
 
-                if (newPassword.length() < 6) {
-                    errorText.setText("Слишком легкий пароль");
-                    return;
-                }
-
                 User user = Authentication.getUser();
-                User newUser = new User(user.getId(), user.getRole(), newName, newPassword, newEmail, user.getAvatar());
+                User newUser = new User(user.getId(), user.getRole(), newName, user.getPassword(), newEmail, user.getAvatar());
 
                 userRepository.updateUser(newUser)
                         .thenAccept(aBoolean -> {
                             if (aBoolean || newUser.getName().equals(user.getName())) {
                                 user.setName(newName);
                                 user.setEmail(newEmail);
-                                user.setPassword(newPassword);
 
                                 labelName.setText(Authentication.getUser().getName());
                                 labelEmail.setText(Authentication.getUser().getEmail());
@@ -350,6 +341,49 @@ public class ProfileActivity extends AppCompatActivity {
                                 errorText.setText("Такой пользователь уже существует");
                             }
                         });
+            });
+        });
+
+        dialog.show();
+    }
+
+    private void updatePassword() {
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View dialogView = inflater.inflate(R.layout.dialog_update_password, null);
+
+        EditText editTextOldPassword = dialogView.findViewById(R.id.editTextOldPassword);
+        EditText editTextNewPassword = dialogView.findViewById(R.id.editTextNewPassword);
+
+        TextView errorText = dialogView.findViewById(R.id.dialog_error);
+
+        AlertDialog dialog = new AlertDialog.Builder(this, R.style.CustomAlertDialogTheme)
+                .setTitle("Смена пароля")
+                .setView(dialogView)
+                .setPositiveButton("Обновить", null)
+                .setNegativeButton("Отмена", (dialogInterface, which) -> dialogInterface.dismiss())
+                .create();
+
+        dialog.setOnShowListener(d -> {
+            Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            positiveButton.setOnClickListener(newView -> {
+                String newPassword = editTextNewPassword.getText().toString();
+                String oldPassword = editTextOldPassword.getText().toString();
+
+                if (newPassword.length() < 6) {
+                    errorText.setText("Слишком кароткий пароль");
+                    return;
+                }
+
+                User user = Authentication.getUser();
+
+                if (!oldPassword.equals(user.getPassword())) {
+                    errorText.setText("Старый пароль неверный");
+                    return;
+                }
+
+                User newUser = new User(user.getId(), user.getRole(), user.getName(), newPassword, user.getEmail(), user.getAvatar());
+                userRepository.updateUser(newUser)
+                        .thenAccept(aBoolean -> user.setPassword(newPassword));
             });
         });
 
@@ -368,6 +402,8 @@ public class ProfileActivity extends AppCompatActivity {
                 updateUserData();
             } else if (item.getItemId() == R.id.option3) {
                 profileButton("удалить");
+            } else if (item.getItemId() == R.id.option4) {
+                updatePassword();
             }
             return true;
         });

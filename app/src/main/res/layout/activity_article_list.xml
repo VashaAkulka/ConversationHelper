@@ -15,27 +15,17 @@
         android:layout_height="40dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginBottom="10dp"
         android:layout_marginTop="10dp"
         android:onClick="onClickBackActivity" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/sort_article_text"
-        android:textColor="@color/text_color"
-        android:layout_marginTop="15dp"
+    <ImageView
+        android:src="@drawable/baseline_import_export_24"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/spinner_sort_article"
-        app:layout_constraintBottom_toBottomOf="@id/spinner_sort_article" />
-
-    <Spinner
-        android:id="@+id/spinner_sort_article"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_marginTop="10dp"
+        android:onClick="onClickPopupMenu" />
 
     <ListView
         android:id="@+id/admin_article_list"

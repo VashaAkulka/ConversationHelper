@@ -16,8 +16,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class SettingChatActivity extends AppCompatActivity {
 
-    private RadioGroup radioGroupDiff;
-    private RadioGroup radioGroupLanguage;
+    private RadioGroup radioGroupDiff, radioGroupLanguage;
     private TextView errorMessage;
 
     @Override

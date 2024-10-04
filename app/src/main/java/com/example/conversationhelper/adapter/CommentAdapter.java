@@ -67,11 +67,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
     }
 
     static class CommentViewHolder extends RecyclerView.ViewHolder {
-        private final TextView userName;
-        private final TextView content;
-        private final TextView date;
-        private final ImageView avatar;
-        private final ImageView deleteButton;
+        private final TextView userName, content, date;
+        private final ImageView avatar, deleteButton;
         private final CommentAdapter adapter;
         private final CommentRepository commentRepository;
 

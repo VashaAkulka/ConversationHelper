@@ -2,13 +2,13 @@ package com.example.conversationhelper;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.ContextThemeWrapper;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Spinner;
+import android.widget.PopupMenu;
 
 import com.example.conversationhelper.adapter.ArticleAdapter;
 import com.example.conversationhelper.auth.Authentication;
@@ -50,37 +50,6 @@ public class ArticleListActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-        Spinner spinner = findViewById(R.id.spinner_sort_article);
-        ArrayAdapter<CharSequence> adapterSpinner = ArrayAdapter.createFromResource(this, R.array.spinner_sort_article_item, R.layout.custom_spinner_item);
-        adapterSpinner.setDropDownViewResource(R.layout.custom_spinner_item);
-        spinner.setAdapter(adapterSpinner);
-
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                String selectedItem = adapterView.getItemAtPosition(i).toString();
-
-                switch (selectedItem) {
-                    case "По дате публикации" :
-                        articleList.sort(Comparator.comparing(Article::getCreateTime));
-                        break;
-                    case "По заголовку" :
-                        articleList.sort(Comparator.comparing(Article::getTitle));
-                        break;
-                    case "По продолжительности" :
-                        articleList.sort(Comparator.comparingInt(ar -> ar.getContent().length()));
-                        break;
-                }
-
-                adapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
     }
 
     @Override
@@ -105,5 +74,26 @@ public class ArticleListActivity extends AppCompatActivity {
 
     public void onClickBackActivity(View view) {
         finish();
+    }
+
+    public void onClickPopupMenu(View view) {
+        Context wrapper = new ContextThemeWrapper(this, R.style.CustomPopupMenu);
+        PopupMenu popupMenu = new PopupMenu(wrapper, view);
+        popupMenu.getMenuInflater().inflate(R.menu.popup_menu_sort, popupMenu.getMenu());
+
+        popupMenu.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.option1) {
+                articleList.sort(Comparator.comparing(Article::getCreateTime));
+            } else if (item.getItemId() == R.id.option2) {
+                articleList.sort(Comparator.comparing(Article::getTitle));
+            } else if (item.getItemId() == R.id.option3) {
+                articleList.sort(Comparator.comparingInt(ar -> ar.getContent().length()));
+            }
+
+            adapter.notifyDataSetChanged();
+            return true;
+        });
+
+        popupMenu.show();
     }
 }

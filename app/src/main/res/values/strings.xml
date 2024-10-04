@@ -4,6 +4,8 @@
     <string name="hint_button_user_name">Имя</string>
     <string name="hint_button_user_password">Пароль</string>
     <string name="hint_button_user_password_repeat">Повторите пароль</string>
+    <string name="dialog_password_old">Старый:</string>
+    <string name="dialog_password_new">Новый:</string>
     <string name="hint_button_user_email">Электронная почта</string>
     <string name="continue_button">Приступить</string>
     <string name="text_view_registration_button">Регистрация</string>
@@ -22,9 +24,9 @@
     <string name="change_profile_data">Изменить данные</string>
     <string name="change_profile_account">Выйти из аккаунта</string>
     <string name="delete_profile">Удалить аккаунт</string>
+    <string name="change_password_profile">Сменить пароль</string>
     <string name="dialog_label_name">Имя:</string>
     <string name="dialog_label_email">Почта:</string>
-    <string name="dialog_label_password">Пароль:</string>
     <string name="article_title">Заголовок:</string>
     <string name="article_description">Описание:</string>
     <string name="article_content">Содержимое:</string>
@@ -32,13 +34,9 @@
     <string name="comments_text">Комментарии:</string>
     <string name="comment_hint">Добавить комментарий</string>
     <string name="show_password">Показать пароль</string>
-    <string name="sort_article_text">Сортировать: </string>
     <string name="bar_chart_title">Время прохождения в часах</string>
     <string name="place_holder_profile">Тут появится статистика, когда начнешь проходить собеседования</string>
-
-    <string-array name="spinner_sort_article_item">
-        <item>По дате публикации</item>
-        <item>По заголовку</item>
-        <item>По продолжительности</item>
-    </string-array>
+    <string name="sort_by_time">По дате публикации</string>
+    <string name="sort_by_title">По заголовку</string>
+    <string name="sort_by_size">По продолжительности</string>
 </resources>

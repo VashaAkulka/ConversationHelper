@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.example.conversationhelper.auth.Authentication;
 import com.example.conversationhelper.db.model.Article;
@@ -16,9 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class SettingArticleActivity extends AppCompatActivity {
 
     private ArticleRepository articleRepository;
-    private EditText title;
-    private EditText content;
-    private EditText description;
+    private EditText title, content, description;
     private boolean isCreate = true;
     private Article article;
 
@@ -31,17 +30,19 @@ public class SettingArticleActivity extends AppCompatActivity {
         description = findViewById(R.id.edit_description_article);
         content = findViewById(R.id.edit_content_article);
         Button addEditButton = findViewById(R.id.save_update_article_button);
+        TextView header = findViewById(R.id.header_setting_article);
 
         Intent intent = getIntent();
         article = (Article) intent.getSerializableExtra("ARTICLE");
         if (article != null) {
             isCreate = false;
             addEditButton.setText("Обновить");
+            header.setText("Редактирование статьи");
 
             title.setText(article.getTitle());
             description.setText(article.getDescription());
             content.setText(article.getContent());
-        }
+        } else header.setText("Создание статьи");
 
         articleRepository = new ArticleRepository(FirebaseFirestore.getInstance());
     }

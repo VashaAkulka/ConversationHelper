@@ -16,8 +16,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class LoginActivity extends AppCompatActivity {
 
     private UserRepository userRepository;
-    private EditText editName;
-    private EditText editPassword;
+    private EditText editName, editPassword;
     private TextView error;
 
     @Override

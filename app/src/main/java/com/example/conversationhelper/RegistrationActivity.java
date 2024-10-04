@@ -20,10 +20,7 @@ import java.util.regex.Pattern;
 
 public class RegistrationActivity extends AppCompatActivity {
     private UserRepository userRepository;
-    private EditText editName;
-    private EditText editPassword;
-    private EditText editPasswordRepeat;
-    private EditText editEmail;
+    private EditText editName, editPassword, editPasswordRepeat, editEmail;
     private TextView error;
     private SharedPreferencesUtil sharedPreferencesUtil;
 
