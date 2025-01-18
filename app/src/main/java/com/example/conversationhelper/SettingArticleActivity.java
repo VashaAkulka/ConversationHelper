@@ -46,12 +46,35 @@ public class SettingArticleActivity extends AppCompatActivity {
         title = findViewById(R.id.edit_title_article);
         description = findViewById(R.id.edit_description_article);
         content = findViewById(R.id.edit_content_article);
-        Button addEditButton = findViewById(R.id.save_update_article_button);
-        TextView header = findViewById(R.id.header_setting_article);
         photoUriLabel = findViewById(R.id.photo_article_setting);
 
+        articleRepository = new ArticleRepository(FirebaseFirestore.getInstance());
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
+
         Intent intent = getIntent();
-        article = (Article) intent.getSerializableExtra("ARTICLE");
+        String articleId = intent.getStringExtra("ARTICLE");
+        articleRepository.getArticleById(articleId).thenAccept(article -> {
+            this.article = article;
+            setStartValue();
+        });
+
+        imagePickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Uri imageUri = result.getData().getData();
+                        if (imageUri != null) {
+                           photoUri = imageUri;
+                           photoUriLabel.setText(photoUri.toString().substring(0, 75));
+                        }
+                    }
+                });
+    }
+
+    private void setStartValue() {
+        Button addEditButton = findViewById(R.id.save_update_article_button);
+        TextView header = findViewById(R.id.header_setting_article);
         if (article != null) {
             isCreate = false;
             addEditButton.setText("Обновить");
@@ -60,24 +83,8 @@ public class SettingArticleActivity extends AppCompatActivity {
             title.setText(article.getTitle());
             description.setText(article.getDescription());
             content.setText(article.getContent());
-            photoUriLabel.setText(article.getPhoto().substring(0, 75));
+            if (article.getPhoto() != null) photoUriLabel.setText(article.getPhoto().substring(0, 75));
         } else header.setText("Создание статьи");
-
-        articleRepository = new ArticleRepository(FirebaseFirestore.getInstance());
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        storageReference = storage.getReference();
-
-        imagePickerLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                        Uri imageUri = result.getData().getData();
-                        if (imageUri != null) {
-                            photoUri = imageUri;
-                           photoUriLabel.setText(photoUri.toString().substring(0, 75));
-                        }
-                    }
-                });
     }
 
     public void onClickAddUpdateArticle(View view) {

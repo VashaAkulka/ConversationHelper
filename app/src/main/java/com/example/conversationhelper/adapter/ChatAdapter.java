@@ -45,14 +45,12 @@ public class ChatAdapter extends ArrayAdapter<Chat> {
         TextView description = finalConvertView.findViewById(R.id.chat_description);
 
         if (chat != null) {
-            if (chat.isStatus()) {
-                resultRepository.getSuccessByChatId(chat.getId())
-                        .thenAccept(aBoolean -> {
-                            ImageView status = finalConvertView.findViewById(R.id.chat_status);
-                            if (aBoolean) status.setImageResource(R.drawable.baseline_done_24);
-                            else status.setImageResource(R.drawable.baseline_do_disturb_24);
-                        });
-            }
+            resultRepository.getSuccessByChatId(chat.getId())
+                    .thenAccept(aBoolean -> {
+                        ImageView status = finalConvertView.findViewById(R.id.chat_status);
+                        if (aBoolean) status.setImageResource(R.drawable.baseline_done_24);
+                        else status.setImageResource(R.drawable.baseline_do_disturb_24);
+                    });
 
             name.setText(String.format("%s %s", chat.getDifficulty(), chat.getSpecialization()));
             description.setText(String.format(Locale.getDefault(), "Количество вопросов: %d\nЯзык общения: %s",

@@ -8,6 +8,20 @@
     android:background="@color/background_color"
     android:paddingHorizontal="15dp">
 
+    <Button
+        android:id="@+id/registration_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:backgroundTint="@color/message_background_color"
+        android:padding="5dp"
+        android:text="@string/registration_button"
+        android:textColor="@color/text_color"
+        app:cornerRadius="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:onClick="onClickBackRegistration"/>
+
     <ImageView
         android:id="@+id/back_activity_button"
         android:src="@drawable/baseline_arrow_back_24"
@@ -28,16 +42,17 @@
         android:onClick="onClickPopupMenu" />
 
     <ListView
-        android:id="@+id/admin_article_list"
+        android:id="@+id/article_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@+id/back_activity_button"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        android:divider="@null"
+        android:dividerHeight="0dp"
         app:layout_constraintBottom_toTopOf="@id/add_article_button"
-        android:divider="@color/text_color"
-        android:dividerHeight="2dp"
-        android:layout_marginTop="8dp"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/back_activity_button" />
 
     <ImageButton
         android:id="@+id/add_article_button"
@@ -53,7 +68,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/admin_article_list"/>
+        app:layout_constraintTop_toBottomOf="@id/article_list"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

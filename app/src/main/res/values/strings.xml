@@ -39,4 +39,5 @@
     <string name="sort_by_time">По дате публикации</string>
     <string name="sort_by_title">По заголовку</string>
     <string name="sort_by_size">По продолжительности</string>
+    <string name="create_account">Создать аккаунт позже</string>
 </resources>

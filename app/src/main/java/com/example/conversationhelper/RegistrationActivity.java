@@ -29,17 +29,8 @@ public class RegistrationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
 
-        userRepository = new UserRepository(FirebaseFirestore.getInstance());
         sharedPreferencesUtil = new SharedPreferencesUtil(this);
-
-        User authUser = sharedPreferencesUtil.loadUser();
-        if (authUser != null) {
-            Authentication.setUser(authUser);
-
-            Intent intent = new Intent(RegistrationActivity.this, ListChatsActivity.class);
-            startActivity(intent);
-            finish();
-        }
+        userRepository = new UserRepository(FirebaseFirestore.getInstance());
 
         editName = findViewById(R.id.edit_user_name_reg);
         editPassword = findViewById(R.id.edit_user_password_reg);

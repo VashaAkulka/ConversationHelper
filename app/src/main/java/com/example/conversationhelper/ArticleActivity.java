@@ -77,16 +77,18 @@ public class ArticleActivity extends AppCompatActivity implements OnCommentDelet
             likeRepository = new LikeRepository(FirebaseFirestore.getInstance());
             commentRepository = new CommentRepository(FirebaseFirestore.getInstance());
 
-            likeRepository.getIfUserLikedArticle(Authentication.getUser().getId(), article.getId())
-                    .thenAccept(aBoolean -> {
-                        if (aBoolean) {
-                            like.setImageResource(R.drawable.baseline_favorite_24);
-                            like.setTag("liked");
-                        } else {
-                            like.setImageResource(R.drawable.baseline_favorite_border_24);
-                            like.setTag("not_liked");
-                        }
-                    });
+            if (Authentication.getUser() != null) {
+                likeRepository.getIfUserLikedArticle(Authentication.getUser().getId(), article.getId())
+                        .thenAccept(aBoolean -> {
+                            if (aBoolean) {
+                                like.setImageResource(R.drawable.baseline_favorite_24);
+                                like.setTag("liked");
+                            } else {
+                                like.setImageResource(R.drawable.baseline_favorite_border_24);
+                                like.setTag("not_liked");
+                            }
+                        });
+            }
 
             likeRepository.getCountLikeByArticleId(article.getId())
                     .thenAccept(likes -> {
@@ -118,6 +120,9 @@ public class ArticleActivity extends AppCompatActivity implements OnCommentDelet
     }
 
     public void onClickLike(View view) {
+        if (Authentication.getUser() == null)
+            return;
+
         if (like.getTag().equals("liked")) {
             like.setImageResource(R.drawable.baseline_favorite_border_24);
             like.setTag("not_liked");
@@ -153,14 +158,20 @@ public class ArticleActivity extends AppCompatActivity implements OnCommentDelet
         if (editComment.getTag().equals("visible")) {
             findViewById(R.id.list_comment_article).setVisibility(View.GONE);
             findViewById(R.id.title_comments).setVisibility(View.GONE);
-            findViewById(R.id.edit_comment_text).setVisibility(View.GONE);
-            findViewById(R.id.send_comment_button).setVisibility(View.GONE);
+
+            if (Authentication.getUser() != null) {
+                findViewById(R.id.edit_comment_text).setVisibility(View.GONE);
+                findViewById(R.id.send_comment_button).setVisibility(View.GONE);
+            }
             editComment.setTag("invisible");
         } else {
             findViewById(R.id.list_comment_article).setVisibility(View.VISIBLE);
             findViewById(R.id.title_comments).setVisibility(View.VISIBLE);
-            findViewById(R.id.edit_comment_text).setVisibility(View.VISIBLE);
-            findViewById(R.id.send_comment_button).setVisibility(View.VISIBLE);
+
+            if (Authentication.getUser() != null) {
+                findViewById(R.id.edit_comment_text).setVisibility(View.VISIBLE);
+                findViewById(R.id.send_comment_button).setVisibility(View.VISIBLE);
+            }
             editComment.setTag("visible");
         }
     }

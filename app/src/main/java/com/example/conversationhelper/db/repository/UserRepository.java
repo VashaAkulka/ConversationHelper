@@ -1,6 +1,7 @@
 package com.example.conversationhelper.db.repository;
 
 
+import com.example.conversationhelper.db.UserRole;
 import com.example.conversationhelper.db.model.User;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -28,7 +29,7 @@ public class UserRepository {
 
     public User addUser(String name, String email, String password) {
         String userId = usersCollection.document().getId();
-        User user = new User(userId, "user", name, password, email, null);
+        User user = new User(userId, UserRole.USER, name, password, email, null);
         usersCollection.document(userId).set(user);
 
         return user;

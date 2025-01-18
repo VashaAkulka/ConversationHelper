@@ -22,7 +22,6 @@ import com.example.conversationhelper.adapter.MessageAdapter;
 import com.example.conversationhelper.auth.Authentication;
 import com.example.conversationhelper.db.model.Chat;
 import com.example.conversationhelper.db.model.Message;
-import com.example.conversationhelper.db.repository.ChatRepository;
 import com.example.conversationhelper.db.repository.MessageRepository;
 import com.example.conversationhelper.db.repository.ResultRepository;
 import com.example.conversationhelper.gpt.ChatGptCallback;
@@ -43,7 +42,6 @@ public class MessengerActivity extends AppCompatActivity {
     private ActivityResultLauncher<Intent> speechRecognizerLauncher;
     private MessageRepository messageRepository;
     private ResultRepository resultRepository;
-    private ChatRepository chatRepository;
     private Chat chat;
     private ImageButton speechButton, sendButton;
 
@@ -57,18 +55,17 @@ public class MessengerActivity extends AppCompatActivity {
         chat = (Chat) intent.getSerializableExtra("CHAT");
         messageRepository = new MessageRepository(FirebaseFirestore.getInstance());
         resultRepository = new ResultRepository(FirebaseFirestore.getInstance());
-        chatRepository = new ChatRepository(FirebaseFirestore.getInstance());
 
         messageHistory = findViewById(R.id.message_history);
         editMessage = findViewById(R.id.edit_message);
         speechButton = findViewById(R.id.speech_button);
         sendButton = findViewById(R.id.send_button);
 
-        if (chat.isStatus()) {
+        resultRepository.getSuccessByChatId(chat.getId()).thenAccept(aBoolean -> {
             editMessage.setVisibility(View.GONE);
             speechButton.setVisibility(View.GONE);
             sendButton.setVisibility(View.GONE);
-        }
+        });
 
         messageRepository.getMessageByChatId(chat.getId())
                         .thenAccept(list -> {
@@ -130,9 +127,6 @@ public class MessengerActivity extends AppCompatActivity {
                     boolean isSuccessful = status.equals("Пройдено успешно") || status.equals("Passed successfully");
 
                     resultRepository.addResult(Authentication.getUser().getId(), chat.getId(), number, isSuccessful);
-
-                    chat.setStatus(true);
-                    chatRepository.updateChatStatusById(chat.getId());
 
                     editMessage.setVisibility(View.GONE);
                     speechButton.setVisibility(View.GONE);

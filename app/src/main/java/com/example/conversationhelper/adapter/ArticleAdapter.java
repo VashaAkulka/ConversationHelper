@@ -11,13 +11,18 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.conversationhelper.R;
 import com.example.conversationhelper.SettingArticleActivity;
 import com.example.conversationhelper.auth.Authentication;
+import com.example.conversationhelper.db.UserRole;
 import com.example.conversationhelper.db.model.Article;
 import com.example.conversationhelper.db.repository.ArticleRepository;
 import com.example.conversationhelper.db.repository.CommentRepository;
 import com.example.conversationhelper.db.repository.LikeRepository;
+import com.example.conversationhelper.db.repository.UserRepository;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
@@ -30,12 +35,14 @@ public class ArticleAdapter extends ArrayAdapter<Article> {
     private final ArticleRepository articleRepository;
     private final LikeRepository likeRepository;
     private final CommentRepository commentRepository;
+    private final UserRepository userRepository;
 
     public ArticleAdapter(Context context, List<Article> articles) {
         super(context, R.layout.list_item_article, articles);
         articleRepository = new ArticleRepository(FirebaseFirestore.getInstance());
         likeRepository = new LikeRepository(FirebaseFirestore.getInstance());
         commentRepository = new CommentRepository(FirebaseFirestore.getInstance());
+        userRepository = new UserRepository(FirebaseFirestore.getInstance());
     }
 
     @NonNull
@@ -54,10 +61,37 @@ public class ArticleAdapter extends ArrayAdapter<Article> {
         TextView likeNumberText = convertView.findViewById(R.id.number_like_article_list);
         TextView commentNumberText = convertView.findViewById(R.id.number_comment_article_list);
         TextView dateText = convertView.findViewById(R.id.date_article_list);
+        ImageView articlePhoto = convertView.findViewById(R.id.article_photo);
+        ImageView authorAvatar = convertView.findViewById(R.id.article_author_avatar);
+        TextView authorName = convertView.findViewById(R.id.article_author_name);
 
         if (article != null) {
             titleText.setText(article.getTitle());
             descriptionText.setText(article.getDescription());
+
+            userRepository.getUserById(article.getUserId()).thenAccept(user -> {
+                if (user.getAvatar() != null) {
+                    Glide.with(getContext())
+                            .load(user.getAvatar())
+                            .apply(new RequestOptions()
+                                    .centerCrop()
+                                    .circleCrop())
+                            .into(authorAvatar);
+                }
+
+                authorName.setText(user.getName());
+            });
+
+            if (article.getPhoto() != null) {
+                Glide.with(convertView.getContext())
+                        .load(article.getPhoto())
+                        .apply(new RequestOptions()
+                                .centerCrop()
+                                .transform(new RoundedCorners(30)))
+                        .into(articlePhoto);
+
+                articlePhoto.setVisibility(View.VISIBLE);
+            }
 
             likeRepository.getCountLikeByArticleId(article.getId()).thenAccept(countLike -> likeNumberText.setText(String.valueOf(countLike)));
             commentRepository.getCountCommentByArticleId(article.getId()).thenAccept(countComment -> commentNumberText.setText(String.valueOf(countComment)));
@@ -67,7 +101,7 @@ public class ArticleAdapter extends ArrayAdapter<Article> {
             String formattedDate = dateFormat.format(createTime);
             dateText.setText(String.format("Дата: %s", formattedDate));
 
-            if (Authentication.getUser().getRole().equals("user")) {
+            if (Authentication.getUser() == null || (Authentication.getUser().getRole() == UserRole.USER)) {
                 deleteButton.setVisibility(View.GONE);
                 editButton.setVisibility(View.GONE);
             }
@@ -80,7 +114,7 @@ public class ArticleAdapter extends ArrayAdapter<Article> {
 
             editButton.setOnClickListener(view -> {
                 Intent intent = new Intent(getContext(), SettingArticleActivity.class);
-                intent.putExtra("ARTICLE", article);
+                intent.putExtra("ARTICLE", article.getId());
                 getContext().startActivity(intent);
             });
         }

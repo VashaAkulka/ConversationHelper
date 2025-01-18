@@ -12,7 +12,10 @@ import android.widget.PopupMenu;
 
 import com.example.conversationhelper.adapter.ArticleAdapter;
 import com.example.conversationhelper.auth.Authentication;
+import com.example.conversationhelper.auth.SharedPreferencesUtil;
+import com.example.conversationhelper.db.UserRole;
 import com.example.conversationhelper.db.model.Article;
+import com.example.conversationhelper.db.model.User;
 import com.example.conversationhelper.db.repository.ArticleRepository;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -26,20 +29,38 @@ public class ArticleListActivity extends AppCompatActivity {
     private ArticleRepository articleRepository;
     private ArticleAdapter adapter;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_list);
 
+        SharedPreferencesUtil sharedPreferencesUtil = new SharedPreferencesUtil(this);
+
+        User authUser = sharedPreferencesUtil.loadUser();
+        if (authUser != null && Authentication.getUser() == null) {
+            Authentication.setUser(authUser);
+
+            Intent intent = new Intent(this, ListChatsActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
         articleRepository = new ArticleRepository(FirebaseFirestore.getInstance());
-        ListView listArticle = findViewById(R.id.admin_article_list);
+        ListView listArticle = findViewById(R.id.article_list);
         adapter = new ArticleAdapter(this, articleList);
         listArticle.setAdapter(adapter);
 
         loadArticles();
 
-        if (Authentication.getUser().getRole().equals("user")) {
+        if (Authentication.getUser() == null) {
+            findViewById(R.id.back_activity_button).setVisibility(View.INVISIBLE);
             findViewById(R.id.add_article_button).setVisibility(View.GONE);
+        } else {
+            findViewById(R.id.registration_button).setVisibility(View.GONE);
+
+            if (Authentication.getUser().getRole() == UserRole.USER) findViewById(R.id.add_article_button).setVisibility(View.GONE);
+            else findViewById(R.id.registration_button).setVisibility(View.GONE);
         }
 
         listArticle.setOnItemClickListener((adapterView, view, i, l) -> {
@@ -95,5 +116,11 @@ public class ArticleListActivity extends AppCompatActivity {
         });
 
         popupMenu.show();
+    }
+
+    public void onClickBackRegistration(View view) {
+        Intent intent = new Intent(this, RegistrationActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

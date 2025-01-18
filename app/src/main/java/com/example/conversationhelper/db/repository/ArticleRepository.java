@@ -77,4 +77,17 @@ public class ArticleRepository {
                     }
                 });
     }
+
+    public CompletableFuture<Article> getArticleById(String id) {
+        CompletableFuture<Article> future = new CompletableFuture<>();
+
+        articleCollection.document(id).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    Article article = documentSnapshot.toObject(Article.class);
+                    future.complete(article);
+                });
+
+        return future;
+    }
+
 }

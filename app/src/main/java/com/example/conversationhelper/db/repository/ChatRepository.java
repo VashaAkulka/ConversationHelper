@@ -29,7 +29,7 @@ public class ChatRepository {
         String chatId = chatCollection.document().getId();
         Timestamp createTime = Timestamp.now();
 
-        Chat chat = new Chat(chatId, difficulty, specialization, language, false, numberQuestions, createTime, userId);
+        Chat chat = new Chat(chatId, difficulty, specialization, language, numberQuestions, createTime, userId);
         chatCollection.document(chatId).set(chat);
 
         return chat;
@@ -60,10 +60,6 @@ public class ChatRepository {
         chatCollection.document(id).delete();
         messageRepository.deleteMessageByChatId(id);
         resultRepository.deleteResultByChatId(id);
-    }
-
-    public void updateChatStatusById(String id) {
-        chatCollection.document(id).update("status", true);
     }
 
     public void deleteChatByUserId(String id) {

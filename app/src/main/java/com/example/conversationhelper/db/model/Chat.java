@@ -9,17 +9,15 @@ public class Chat implements Serializable {
     private String difficulty;
     private String specialization;
     private String language;
-    private boolean status;
     private int numberQuestions;
     private transient Timestamp startTime;
     private String userId;
 
-    public Chat(String id, String difficulty, String specialization, String language, boolean status, int numberQuestions, Timestamp startTime, String userId) {
+    public Chat(String id, String difficulty, String specialization, String language, int numberQuestions, Timestamp startTime, String userId) {
         this.id = id;
         this.difficulty = difficulty;
         this.specialization = specialization;
         this.language = language;
-        this.status = status;
         this.numberQuestions = numberQuestions;
         this.startTime = startTime;
         this.userId = userId;
@@ -50,14 +48,6 @@ public class Chat implements Serializable {
 
     public void setLanguage(String language) {
         this.language = language;
-    }
-
-    public boolean isStatus() {
-        return status;
-    }
-
-    public void setStatus(boolean status) {
-        this.status = status;
     }
 
     public int getNumberQuestions() {

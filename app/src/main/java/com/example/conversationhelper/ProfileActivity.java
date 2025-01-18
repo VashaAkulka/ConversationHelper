@@ -284,6 +284,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                     SharedPreferencesUtil sharedPreferencesUtil = new SharedPreferencesUtil(this);
                     sharedPreferencesUtil.deleteUser();
+                    Authentication.setUser(null);
 
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);

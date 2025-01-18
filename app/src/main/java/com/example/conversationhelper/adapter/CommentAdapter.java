@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.conversationhelper.R;
 import com.example.conversationhelper.auth.Authentication;
+import com.example.conversationhelper.db.UserRole;
 import com.example.conversationhelper.db.model.Comment;
 import com.example.conversationhelper.db.model.User;
 import com.example.conversationhelper.db.repository.CommentRepository;
@@ -112,10 +113,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
                 }
             });
 
-            if (Authentication.getUser().getRole().equals("user")) {
-                if (!Authentication.getUser().getName().equals(user.getName())) {
-                    deleteButton.setVisibility(View.GONE);
-                }
+            if (Authentication.getUser() == null || (Authentication.getUser().getRole() == UserRole.USER && !Authentication.getUser().getName().equals(user.getName()))) {
+                deleteButton.setVisibility(View.GONE);
             }
         }
     }

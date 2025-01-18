@@ -1,14 +1,16 @@
 package com.example.conversationhelper.db.model;
 
+import com.example.conversationhelper.db.UserRole;
+
 public class User {
     private String id;
-    private String role;
+    private UserRole role;
     private String name;
     private String password;
     private String email;
     private String avatar;
 
-    public User(String id, String role, String name, String password, String email, String avatar) {
+    public User(String id, UserRole role, String name, String password, String email, String avatar) {
         this.id = id;
         this.role = role;
         this.name = name;
@@ -20,11 +22,11 @@ public class User {
     public User() {
     }
 
-    public String getRole() {
+    public UserRole getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(UserRole role) {
         this.role = role;
     }
 
