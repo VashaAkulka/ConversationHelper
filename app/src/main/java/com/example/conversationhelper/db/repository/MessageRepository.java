@@ -1,5 +1,7 @@
 package com.example.conversationhelper.db.repository;
 
+import com.example.conversationhelper.db.MessageType;
+import com.example.conversationhelper.db.model.Article;
 import com.example.conversationhelper.db.model.Message;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
@@ -17,7 +19,7 @@ public class MessageRepository {
         this.messageCollection = db.collection("messages");
     }
 
-    public Message addMessage(String content, String chatId, String type) {
+    public Message addMessage(String content, String chatId, MessageType type) {
         String messageId = messageCollection.document().getId();
         Timestamp createTime = Timestamp.now();
 
@@ -58,5 +60,9 @@ public class MessageRepository {
                         }
                     }
                 });
+    }
+
+    public void updateMessage(Message message) {
+        messageCollection.document(message.getId()).set(message);
     }
 }

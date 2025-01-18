@@ -6,41 +6,45 @@ import android.os.Looper;
 import androidx.annotation.NonNull;
 
 import com.example.conversationhelper.BuildConfig;
+import com.example.conversationhelper.db.MessageType;
 import com.example.conversationhelper.db.model.Chat;
 import com.example.conversationhelper.db.model.Message;
-import com.google.gson.Gson;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.ConnectionPool;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Body;
+import retrofit2.http.Headers;
+import retrofit2.http.POST;
 
 public class ChatGptClient {
 
-    private static final OkHttpClient client = new OkHttpClient.Builder()
-            .connectTimeout(60, TimeUnit.SECONDS)
-            .writeTimeout(60, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
-            .retryOnConnectionFailure(true)
-            .connectionPool(new ConnectionPool(10, 5, TimeUnit.MINUTES))
+    private static final String BASE_URL = "https://caila.io/api/mlpgate/account/just-ai/model/openai-proxy/";
+
+    private static final Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .callbackExecutor(Executors.newSingleThreadExecutor())
             .build();
 
-    private static final Gson gson = new Gson();
+    private interface ChatGptService {
+        @Headers({
+                "Content-Type: application/json; charset=utf-8",
+                "Authorization: Bearer " + BuildConfig.API_KEY
+        })
+        @POST("predict")
+        Call<ChatResponse> sendMessage(@Body ChatRequest body);
+    }
+
+    private static final ChatGptService service = retrofit.create(ChatGptService.class);
 
     public static void send(Chat chat, List<Message> historyMessages, ChatGptCallback callback) {
         Executors.newSingleThreadExecutor().execute(() -> {
-
             List<RequestMessage> messages = new ArrayList<>();
 
             String systemMessage = "Возьми на себя роль технического специалиста "
@@ -54,41 +58,30 @@ public class ChatGptClient {
                     + " Дальше должны идти для каждого неправильного ответа пояснения в чем была допущена ошибка."
                     + " Закончи все это дополнительными советами для улучшения результатов собеседования.";
 
-            messages.add(new RequestMessage("system", systemMessage));
+            messages.add(new RequestMessage(MessageType.system.name(), systemMessage));
 
             for (Message historyMessage : historyMessages) {
-                if (!historyMessage.getType().equals("error")) {
-                    messages.add(new RequestMessage(historyMessage.getType(), historyMessage.getContent()));
+                if (historyMessage.getType() != MessageType.error) {
+                    messages.add(new RequestMessage(historyMessage.getType().name(), historyMessage.getContent()));
                 }
             }
 
-            String jsonBody = gson.toJson(new ChatRequest("gpt-4-turbo", messages));
+            ChatRequest chatRequest = new ChatRequest("gpt-3.5-turbo", messages);
 
-            Request request = new Request.Builder()
-                    .url("https://api.proxyapi.ru/openai/v1/chat/completions")
-                    .header("Authorization", "Bearer " + BuildConfig.API_KEY)
-                    .post(RequestBody.create(jsonBody, MediaType.get("application/json; charset=utf-8")))
-                    .build();
-
-            client.newCall(request).enqueue(new Callback() {
+            service.sendMessage(chatRequest).enqueue(new Callback<ChatResponse>() {
                 @Override
-                public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                    new Handler(Looper.getMainLooper()).post(() -> callback.onError(e));
+                public void onResponse(@NonNull Call<ChatResponse> call, @NonNull retrofit2.Response<ChatResponse> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        String result = response.body().choices.get(0).message.content;
+                        new Handler(Looper.getMainLooper()).post(() -> callback.onSuccess(result));
+                    } else {
+                        new Handler(Looper.getMainLooper()).post(() -> callback.onError(new Exception("Unexpected response")));
+                    }
                 }
 
                 @Override
-                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                    try (ResponseBody responseBody = response.body()) {
-                        if (!response.isSuccessful() || responseBody == null) {
-                            throw new IOException("Unexpected code " + response);
-                        }
-
-                        String responseBodyString = responseBody.string();
-                        String result = gson.fromJson(responseBodyString, ChatResponse.class)
-                                .choices.get(0).message.content;
-
-                        new Handler(Looper.getMainLooper()).post(() -> callback.onSuccess(result));
-                    }
+                public void onFailure(@NonNull Call<ChatResponse> call, @NonNull Throwable t) {
+                    new Handler(Looper.getMainLooper()).post(() -> callback.onError(t));
                 }
             });
         });

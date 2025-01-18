@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.example.conversationhelper.R;
+import com.example.conversationhelper.db.MessageType;
 import com.example.conversationhelper.db.model.Message;
 
 import java.util.List;
@@ -49,13 +50,13 @@ public class MessageAdapter extends ArrayAdapter<Message> {
             float scale = getContext().getResources().getDisplayMetrics().density;
             int marginInPx = (int) (50 * scale + 0.5f);
 
-            if (message.getType().equals("user")) {
+            if (message.getType() == MessageType.user) {
                 textParams.gravity = Gravity.END;
                 textParams.setMargins(marginInPx, 0, 0, 0);
                 messageText.setBackgroundResource(R.drawable.round_chatgpt_message);
 
                 timeParams.gravity = Gravity.END;
-            } else if (message.getType().equals("assistant")) {
+            } else if (message.getType() == MessageType.assistant) {
                 textParams.gravity = Gravity.START;
                 textParams.setMargins(0, 0, marginInPx, 0);
                 messageText.setBackgroundResource(R.drawable.round_user_message);

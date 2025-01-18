@@ -20,6 +20,7 @@ import android.widget.ListView;
 
 import com.example.conversationhelper.adapter.MessageAdapter;
 import com.example.conversationhelper.auth.Authentication;
+import com.example.conversationhelper.db.MessageType;
 import com.example.conversationhelper.db.model.Chat;
 import com.example.conversationhelper.db.model.Message;
 import com.example.conversationhelper.db.repository.MessageRepository;
@@ -93,7 +94,7 @@ public class MessengerActivity extends AppCompatActivity {
         editMessage.setEnabled(false);
         editMessage.setText("");
 
-        messages.add(messageRepository.addMessage(messageContent, chat.getId(), "user"));
+        messages.add(messageRepository.addMessage(messageContent, chat.getId(), MessageType.user));
 
         adapter.notifyDataSetChanged();
         messageHistory.setSelection(adapter.getCount() - 1);
@@ -114,7 +115,7 @@ public class MessengerActivity extends AppCompatActivity {
                 Pattern patternStatus = Pattern.compile(regexStatus);
                 Matcher matcherStatus = patternStatus.matcher(result);
 
-                messages.add(messageRepository.addMessage(result, chat.getId(), "assistant"));
+                messages.add(messageRepository.addMessage(result, chat.getId(), MessageType.assistant));
 
                 adapter.notifyDataSetChanged();
                 messageHistory.setSelection(adapter.getCount() - 1);
@@ -135,13 +136,14 @@ public class MessengerActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 if (retries > 0) {
                     sendMessageWithRetries(chat, messages, retries - 1);
                 } else {
                     int size = messages.size() - 1;
                     messages.get(size).setContent("Ошибка соединения, пожалуйста повторите попытку чуть позже");
-                    messages.get(size).setType("error");
+                    messages.get(size).setType(MessageType.error);
+                    messageRepository.updateMessage(messages.get(size));
                     editMessage.setEnabled(true);
                     adapter.notifyDataSetChanged();
                 }

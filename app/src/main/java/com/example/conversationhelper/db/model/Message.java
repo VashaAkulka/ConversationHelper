@@ -1,15 +1,16 @@
 package com.example.conversationhelper.db.model;
 
+import com.example.conversationhelper.db.MessageType;
 import com.google.firebase.Timestamp;
 
 public class Message {
     private String id;
     private String content;
-    private String type;
+    private MessageType type;
     private Timestamp createTime;
     private String chatId;
 
-    public Message(String id, String content, String type, Timestamp createTime, String chatId) {
+    public Message(String id, String content, MessageType type, Timestamp createTime, String chatId) {
         this.id = id;
         this.content = content;
         this.type = type;
@@ -28,11 +29,11 @@ public class Message {
         this.content = content;
     }
 
-    public String getType() {
+    public MessageType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(MessageType type) {
         this.type = type;
     }
 
