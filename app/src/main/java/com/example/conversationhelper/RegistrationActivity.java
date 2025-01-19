@@ -66,8 +66,10 @@ public class RegistrationActivity extends AppCompatActivity {
             return;
         }
 
+        findViewById(R.id.registration_button).setEnabled(false);
         userRepository.getUserByName(name)
                 .thenAccept(user -> {
+                    findViewById(R.id.registration_button).setEnabled(true);
                     if (user != null) {
                         error.setText("Такой пользователь уже существует");
                         return;

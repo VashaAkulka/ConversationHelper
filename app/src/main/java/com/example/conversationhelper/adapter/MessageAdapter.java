@@ -3,6 +3,7 @@ package com.example.conversationhelper.adapter;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import com.example.conversationhelper.db.MessageType;
 import com.example.conversationhelper.db.model.Message;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MessageAdapter extends ArrayAdapter<Message> {
 
@@ -62,6 +64,8 @@ public class MessageAdapter extends ArrayAdapter<Message> {
                 messageText.setBackgroundResource(R.drawable.round_user_message);
 
                 timeParams.gravity = Gravity.START;
+
+                if (position == getCount() - 1) animateText(messageText, text);
             } else {
                 textParams.gravity = Gravity.END;
                 textParams.setMargins(marginInPx, 0, 0, 0);
@@ -82,6 +86,28 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 
         return convertView;
     }
+
+    private void animateText(TextView messageText, String text) {
+        messageText.setText("");
+
+        final Handler handler = new Handler();
+        AtomicInteger index = new AtomicInteger(0);
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                int currentIndex = index.get();
+                if (currentIndex < text.length()) {
+                    messageText.append(String.valueOf(text.charAt(currentIndex)));
+                    index.incrementAndGet();
+                    handler.postDelayed(this, 50);
+                }
+            }
+        };
+
+        handler.post(runnable);
+    }
+
 
     private void copyToClipboard(String text) {
         ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);

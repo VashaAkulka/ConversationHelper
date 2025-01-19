@@ -11,6 +11,7 @@ import com.example.conversationhelper.adapter.ChatAdapter;
 import com.example.conversationhelper.auth.Authentication;
 import com.example.conversationhelper.db.model.Chat;
 import com.example.conversationhelper.db.repository.ChatRepository;
+import com.example.conversationhelper.dialog.LoadingDialog;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -56,8 +57,12 @@ public class ListChatsActivity extends AppCompatActivity {
     }
 
     private void loadChats() {
+        LoadingDialog loadingDialog;
+        loadingDialog = new LoadingDialog(this);
+        loadingDialog.show();
         chatRepository.getAllChatsByUserId(Authentication.getUser().getId())
                 .thenAccept(list -> {
+                    loadingDialog.dismiss();
                     chatList.clear();
                     chatList.addAll(list);
                     adapter.notifyDataSetChanged();

@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.example.conversationhelper.auth.Authentication;
 import com.example.conversationhelper.db.model.Article;
 import com.example.conversationhelper.db.repository.ArticleRepository;
+import com.example.conversationhelper.dialog.LoadingDialog;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -67,6 +68,7 @@ public class SettingArticleActivity extends AppCompatActivity {
                         if (imageUri != null) {
                            photoUri = imageUri;
                            photoUriLabel.setText(photoUri.toString().substring(0, 75));
+                           findViewById(R.id.select_article_photo).setEnabled(true);
                         }
                     }
                 });
@@ -88,6 +90,9 @@ public class SettingArticleActivity extends AppCompatActivity {
     }
 
     public void onClickAddUpdateArticle(View view) {
+        LoadingDialog loadingDialog;
+        loadingDialog = new LoadingDialog(this);
+        loadingDialog.show();
         String titleStr = title.getText().toString();
         String descriptionStr = description.getText().toString();
         String contentStr = content.getText().toString();
@@ -110,6 +115,7 @@ public class SettingArticleActivity extends AppCompatActivity {
             uploadTask.addOnSuccessListener(taskSnapshot -> photoRef.getDownloadUrl().addOnSuccessListener(downloadUri -> {
                 article.setPhoto(downloadUri.toString());
                 articleRepository.updateArticle(article);
+                loadingDialog.dismiss();
 
                 Intent intent = new Intent(SettingArticleActivity.this, ArticleActivity.class);
                 intent.putExtra("ARTICLE", article);
@@ -129,6 +135,8 @@ public class SettingArticleActivity extends AppCompatActivity {
     }
 
     public void onClickAddArticlePhoto(View view) {
+        findViewById(R.id.select_article_photo).setEnabled(false);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_MEDIA_IMAGES)
                     != PackageManager.PERMISSION_GRANTED) {

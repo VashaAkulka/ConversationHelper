@@ -63,9 +63,11 @@ public class MessengerActivity extends AppCompatActivity {
         sendButton = findViewById(R.id.send_button);
 
         resultRepository.getSuccessByChatId(chat.getId()).thenAccept(aBoolean -> {
-            editMessage.setVisibility(View.GONE);
-            speechButton.setVisibility(View.GONE);
-            sendButton.setVisibility(View.GONE);
+            if (aBoolean != null) {
+                editMessage.setVisibility(View.GONE);
+                speechButton.setVisibility(View.GONE);
+                sendButton.setVisibility(View.GONE);
+            }
         });
 
         messageRepository.getMessageByChatId(chat.getId())

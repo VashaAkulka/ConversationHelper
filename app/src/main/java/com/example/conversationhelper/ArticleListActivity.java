@@ -18,6 +18,7 @@ import com.example.conversationhelper.db.UserRole;
 import com.example.conversationhelper.db.model.Article;
 import com.example.conversationhelper.db.model.User;
 import com.example.conversationhelper.db.repository.ArticleRepository;
+import com.example.conversationhelper.dialog.LoadingDialog;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -87,8 +88,12 @@ public class ArticleListActivity extends AppCompatActivity {
     }
 
     private void loadArticles() {
+        LoadingDialog loadingDialog;
+        loadingDialog = new LoadingDialog(this);
+        loadingDialog.show();
         articleRepository.getAllArticle()
                 .thenAccept(list -> {
+                    loadingDialog.dismiss();
                     articleList.clear();
                     articleList.addAll(list);
                     adapter.notifyDataSetChanged();

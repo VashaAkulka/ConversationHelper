@@ -35,6 +35,7 @@ import com.example.conversationhelper.db.model.User;
 import com.example.conversationhelper.db.repository.ChatRepository;
 import com.example.conversationhelper.db.repository.ResultRepository;
 import com.example.conversationhelper.db.repository.UserRepository;
+import com.example.conversationhelper.dialog.LoadingDialog;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.YAxis;
@@ -101,6 +102,9 @@ public class ProfileActivity extends AppCompatActivity {
         imagePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
+                    LoadingDialog loadingDialog;
+                    loadingDialog = new LoadingDialog(this);
+                    loadingDialog.show();
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         Uri imageUri = result.getData().getData();
                         if (imageUri != null) {
@@ -116,6 +120,8 @@ public class ProfileActivity extends AppCompatActivity {
 
                             UploadTask uploadTask = avatarRef.putFile(imageUri);
                             uploadTask.addOnSuccessListener(taskSnapshot -> avatarRef.getDownloadUrl().addOnSuccessListener(downloadUri -> {
+                                loadingDialog.dismiss();
+                                findViewById(R.id.image_avatar).setEnabled(true);
                                 String imageUrlString = downloadUri.toString();
 
                                 Authentication.getUser().setAvatar(imageUrlString);
@@ -143,7 +149,10 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void bindBarDiagram(ArrayList<BarEntry> barEntries, BarChart barChart) {
-        if (barEntries.isEmpty()) return;
+        if (barEntries.isEmpty()) {
+            findViewById(R.id.profile_place_holder).setVisibility(View.VISIBLE);
+            return;
+        }
 
         int barColor = ContextCompat.getColor(this, R.color.message_background_color);
         int textColor = ContextCompat.getColor(this, R.color.text_color);
@@ -181,10 +190,12 @@ public class ProfileActivity extends AppCompatActivity {
 
         barChart.setVisibility(View.VISIBLE);
         findViewById(R.id.bar_chart_title).setVisibility(View.VISIBLE);
-        findViewById(R.id.profile_place_holder).setVisibility(View.GONE);
     }
 
     private void createPieDiagram() {
+        LoadingDialog loadingDialog;
+        loadingDialog = new LoadingDialog(this);
+        loadingDialog.show();
         PieChart answerDiagram = findViewById(R.id.answer_stats);
         ArrayList<PieEntry> answerEntries = new ArrayList<>();
         resultRepository.getCountRightAnswerByUserId(Authentication.getUser().getId())
@@ -193,6 +204,7 @@ public class ProfileActivity extends AppCompatActivity {
                                     answerEntries.add(new PieEntry(countRight, "Правильно"));
                                     answerEntries.add(new PieEntry(countQuestion - countRight, "Неправильно"));
                                     bindPieDiagram(answerDiagram, answerEntries, "Ответы");
+                                    loadingDialog.dismiss();
                                 }));
 
 
@@ -203,12 +215,16 @@ public class ProfileActivity extends AppCompatActivity {
                     chatEntries.add(new PieEntry(count, "Завершены"));
                     chatEntries.add(new PieEntry(chats.size() - count, "В процессе"));
                     bindPieDiagram(chatDiagram, chatEntries, "Чаты");
+                    loadingDialog.dismiss();
                 }));
 
     }
 
     private void bindPieDiagram(PieChart pieChart, List<PieEntry> entries, String text) {
-        if (entries.get(0).getValue() == 0 && entries.get(1).getValue() == 0) return;
+        if (entries.get(0).getValue() == 0 && entries.get(1).getValue() == 0) {
+            findViewById(R.id.profile_place_holder).setVisibility(View.VISIBLE);
+            return;
+        }
 
         PieDataSet dataSet = new PieDataSet(entries, "Labels");
         int correctColor = ContextCompat.getColor(this, R.color.correct);
@@ -239,12 +255,12 @@ public class ProfileActivity extends AppCompatActivity {
         pieChart.setEntryLabelColor(textColor);
         pieChart.invalidate();
 
-        findViewById(R.id.profile_place_holder).setVisibility(View.GONE);
         pieChart.setVisibility(View.VISIBLE);
     }
 
 
     public void onClickOpenGallery(View view) {
+        findViewById(R.id.image_avatar).setEnabled(false);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES)
                     != PackageManager.PERMISSION_GRANTED) {

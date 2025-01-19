@@ -40,8 +40,10 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+        findViewById(R.id.login_button).setEnabled(false);
         userRepository.getUserByName(name)
                 .thenAccept(user -> {
+                    findViewById(R.id.login_button).setEnabled(true);
                     if (user == null || !user.getPassword().equals(password)) {
                         error.setText("Имя или пароль неправильные");
                         return;
