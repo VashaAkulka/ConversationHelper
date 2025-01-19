@@ -1,7 +1,6 @@
 package com.example.conversationhelper.db.repository;
 
 import com.example.conversationhelper.db.MessageType;
-import com.example.conversationhelper.db.model.Article;
 import com.example.conversationhelper.db.model.Message;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;

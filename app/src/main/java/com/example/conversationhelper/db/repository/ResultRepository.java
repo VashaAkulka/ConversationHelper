@@ -120,12 +120,19 @@ public class ResultRepository {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
+                        boolean found = false;
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Boolean success = document.getBoolean("success");
                             future.complete(success);
+                            found = true;
+                        }
+                        if (!found) {
+                            future.complete(null);
                         }
                     }
                 });
         return future;
     }
+
+
 }

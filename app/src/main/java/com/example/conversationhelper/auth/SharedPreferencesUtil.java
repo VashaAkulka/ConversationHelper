@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 public class SharedPreferencesUtil {
     private static final String PREFS_NAME = "my_prefs";
     private static final String KEY_USER = "auth_user";
+    private static final String KEY_THEME = "app_theme";
 
     private final SharedPreferences sharedPreferences;
     private final Gson gson;
@@ -30,5 +31,13 @@ public class SharedPreferencesUtil {
 
     public void deleteUser() {
         sharedPreferences.edit().remove(KEY_USER).apply();
+    }
+
+    public void saveTheme(boolean isNightMode) {
+        sharedPreferences.edit().putBoolean(KEY_THEME, isNightMode).apply();
+    }
+
+    public boolean loadTheme() {
+        return sharedPreferences.getBoolean(KEY_THEME, false);
     }
 }

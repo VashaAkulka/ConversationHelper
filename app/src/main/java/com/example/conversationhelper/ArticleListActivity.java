@@ -1,6 +1,7 @@
 package com.example.conversationhelper;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import android.content.Context;
 import android.content.Intent;
@@ -36,6 +37,12 @@ public class ArticleListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_article_list);
 
         SharedPreferencesUtil sharedPreferencesUtil = new SharedPreferencesUtil(this);
+
+        if (sharedPreferencesUtil.loadTheme()) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
 
         User authUser = sharedPreferencesUtil.loadUser();
         if (authUser != null && Authentication.getUser() == null) {

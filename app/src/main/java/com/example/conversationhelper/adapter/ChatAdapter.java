@@ -47,9 +47,11 @@ public class ChatAdapter extends ArrayAdapter<Chat> {
         if (chat != null) {
             resultRepository.getSuccessByChatId(chat.getId())
                     .thenAccept(aBoolean -> {
-                        ImageView status = finalConvertView.findViewById(R.id.chat_status);
-                        if (aBoolean) status.setImageResource(R.drawable.baseline_done_24);
-                        else status.setImageResource(R.drawable.baseline_do_disturb_24);
+                        if (aBoolean != null) {
+                            ImageView status = finalConvertView.findViewById(R.id.chat_status);
+                            if (aBoolean) status.setImageResource(R.drawable.baseline_done_24);
+                            else status.setImageResource(R.drawable.baseline_do_disturb_24);
+                        }
                     });
 
             name.setText(String.format("%s %s", chat.getDifficulty(), chat.getSpecialization()));

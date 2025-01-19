@@ -5,6 +5,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -56,6 +57,8 @@ import java.util.regex.Pattern;
 
 public class ProfileActivity extends AppCompatActivity {
 
+    private boolean isNightMode;
+    private SharedPreferencesUtil sharedPreferencesUtil;
     private ImageView avatar;
     private TextView labelName, labelEmail;
     private UserRepository userRepository;
@@ -80,6 +83,9 @@ public class ProfileActivity extends AppCompatActivity {
 
         labelName.setText(Authentication.getUser().getName());
         labelEmail.setText(Authentication.getUser().getEmail());
+
+        sharedPreferencesUtil = new SharedPreferencesUtil(this);
+        isNightMode = sharedPreferencesUtil.loadTheme();
 
         if (Authentication.getUser().getAvatar() != null) {
             String avatarUrlString = Authentication.getUser().getAvatar();
@@ -182,26 +188,22 @@ public class ProfileActivity extends AppCompatActivity {
         PieChart answerDiagram = findViewById(R.id.answer_stats);
         ArrayList<PieEntry> answerEntries = new ArrayList<>();
         resultRepository.getCountRightAnswerByUserId(Authentication.getUser().getId())
-                        .thenAccept(countRight -> {
-                            answerEntries.add(new PieEntry(countRight, "Правильно"));
-
-                            chatRepository.getCountQuestionByUserId(Authentication.getUser().getId())
-                                    .thenAccept(countQuestion -> {
-                                        answerEntries.add(new PieEntry(countQuestion, "Неправильно"));
-                                        bindPieDiagram(answerDiagram, answerEntries, "Ответы");
-                                    });
-                        });
+                        .thenAccept(countRight -> chatRepository.getCountQuestionByUserId(Authentication.getUser().getId())
+                                .thenAccept(countQuestion -> {
+                                    answerEntries.add(new PieEntry(countRight, "Правильно"));
+                                    answerEntries.add(new PieEntry(countQuestion - countRight, "Неправильно"));
+                                    bindPieDiagram(answerDiagram, answerEntries, "Ответы");
+                                }));
 
 
         PieChart chatDiagram = findViewById(R.id.complete_chat_stats);
         ArrayList<PieEntry> chatEntries = new ArrayList<>();
         chatRepository.getCountCompleteChat(Authentication.getUser().getId())
-                .thenAccept(pair -> {
-                    chatEntries.add(new PieEntry(pair.first, "Завершены"));
-                    chatEntries.add(new PieEntry(pair.second, "В процессе"));
-
+                .thenAccept(count -> chatRepository.getAllChatsByUserId(Authentication.getUser().getId()).thenAccept(chats -> {
+                    chatEntries.add(new PieEntry(count, "Завершены"));
+                    chatEntries.add(new PieEntry(chats.size() - count, "В процессе"));
                     bindPieDiagram(chatDiagram, chatEntries, "Чаты");
-                });
+                }));
 
     }
 
@@ -406,11 +408,25 @@ public class ProfileActivity extends AppCompatActivity {
                 profileButton("удалить");
             } else if (item.getItemId() == R.id.option4) {
                 updatePassword();
+            } else if (item.getItemId() == R.id.option5) {
+                changeTheme();
             }
             return true;
         });
 
         popupMenu.show();
+    }
+
+
+
+    private void changeTheme() {
+        isNightMode = !isNightMode;
+        if (isNightMode) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+        sharedPreferencesUtil.saveTheme(isNightMode);
     }
 
     public void onClickBackActivity(View view) {

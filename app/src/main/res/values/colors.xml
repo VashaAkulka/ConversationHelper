@@ -2,12 +2,12 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="text_color">#ececec</color>
-    <color name="hint_color">#b4b4b4</color>
-    <color name="background_color">#212121</color>
-    <color name="message_background_color">#2f2f2f</color>
-    <color name="assist_message_background_color">#3A3A3A</color>
-    <color name="error_message">#9C0000</color>
-    <color name="correct">#454545</color>
-    <color name="incorrect">#2f2f2f</color>
+    <color name="text_color">#212121</color>
+    <color name="hint_color">#757575</color>
+    <color name="background_color">#F5F5F5</color>
+    <color name="message_background_color">#E0E0E0</color>
+    <color name="assist_message_background_color">#D6D6D6</color>
+    <color name="error_message">#D32F2F</color>
+    <color name="correct">#A5D6A7</color>
+    <color name="incorrect">#EF9A9A</color>
 </resources>

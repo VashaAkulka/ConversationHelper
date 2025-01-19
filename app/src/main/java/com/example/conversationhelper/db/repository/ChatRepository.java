@@ -1,7 +1,6 @@
 package com.example.conversationhelper.db.repository;
 
 
-import android.util.Pair;
 
 import com.example.conversationhelper.db.model.Chat;
 import com.google.firebase.Timestamp;
@@ -12,6 +11,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ChatRepository {
     private final CollectionReference chatCollection;
@@ -80,42 +80,54 @@ public class ChatRepository {
 
         chatCollection
                 .whereEqualTo("userId", id)
-                .whereEqualTo("status", true)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        int count = 0;
+                        List<Chat> chats = new ArrayList<>();
+                        List<CompletableFuture<Void>> futures = new ArrayList<>();
+
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            Object numberQuestions = document.get("numberQuestions");
-                            if (numberQuestions instanceof Number) {
-                                count += ((Number) numberQuestions).intValue();
-                            }
+                            Chat chat = document.toObject(Chat.class);
+                            CompletableFuture<Void> chatFuture = resultRepository.getSuccessByChatId(chat.getId())
+                                    .thenAccept(aBoolean -> {
+                                        if (aBoolean != null) chats.add(chat);
+                                    });
+                            futures.add(chatFuture);
                         }
-                        future.complete(count);
+
+                        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).thenRun(() -> {
+                            int sum = chats.stream()
+                                    .mapToInt(Chat::getNumberQuestions)
+                                    .sum();
+                            future.complete(sum);
+                        });
                     }
                 });
+
         return future;
     }
 
-    public CompletableFuture<Pair<Integer, Integer>> getCountCompleteChat(String userId) {
-        CompletableFuture<Pair<Integer, Integer>> future = new CompletableFuture<>();
+    public CompletableFuture<Integer> getCountCompleteChat(String userId) {
+        CompletableFuture<Integer> future = new CompletableFuture<>();
 
         chatCollection
                 .whereEqualTo("userId", userId)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        int complete = 0;
-                        int notComplete = 0;
+                        List<CompletableFuture<Void>> futures = new ArrayList<>();
+                        AtomicInteger complete = new AtomicInteger(0);
 
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            Boolean status = document.getBoolean("status");
-                            if (status == null) continue;
-                            if (status) complete++;
-                            else notComplete++;
+                            Chat chat = document.toObject(Chat.class);
+                            CompletableFuture<Void> chatFuture = resultRepository.getSuccessByChatId(chat.getId())
+                                    .thenAccept(aBoolean -> {
+                                        if (aBoolean != null) complete.incrementAndGet();
+                                    });
+                            futures.add(chatFuture);
                         }
 
-                        future.complete(new Pair<>(complete, notComplete));
+                        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).thenRun(() -> future.complete(complete.get()));
                     }
                 });
 

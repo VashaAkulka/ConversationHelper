@@ -4,4 +4,6 @@
         <!-- Customize your dark theme here. -->
         <item name="colorPrimary">@color/hint_color</item>
     </style>
+
+    <style name="Theme.ConversationHelper" parent="Base.Theme.ConversationHelper" />
 </resources>
