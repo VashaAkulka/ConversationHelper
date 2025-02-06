@@ -7,6 +7,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.Intent;
@@ -16,7 +18,6 @@ import android.speech.RecognizerIntent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListView;
 
 import com.example.conversationhelper.adapter.MessageAdapter;
 import com.example.conversationhelper.auth.Authentication;
@@ -39,7 +40,7 @@ public class MessengerActivity extends AppCompatActivity {
     private final List<Message> messages = new ArrayList<>();
     private MessageAdapter adapter;
     private EditText editMessage;
-    private ListView messageHistory;
+    private RecyclerView messageHistory;
     private ActivityResultLauncher<Intent> speechRecognizerLauncher;
     private MessageRepository messageRepository;
     private ResultRepository resultRepository;
@@ -73,8 +74,10 @@ public class MessengerActivity extends AppCompatActivity {
         messageRepository.getMessageByChatId(chat.getId())
                         .thenAccept(list -> {
                             messages.addAll(list);
-                            adapter = new MessageAdapter(this, messages);
+                            adapter = new MessageAdapter(messages, this);
+                            messageHistory.setLayoutManager(new LinearLayoutManager(this));
                             messageHistory.setAdapter(adapter);
+                            messageHistory.scrollToPosition(adapter.getItemCount() - 1);
                         });
 
         speechRecognizerLauncher = registerForActivityResult(
@@ -98,8 +101,8 @@ public class MessengerActivity extends AppCompatActivity {
 
         messages.add(messageRepository.addMessage(messageContent, chat.getId(), MessageType.user));
 
-        adapter.notifyDataSetChanged();
-        messageHistory.setSelection(adapter.getCount() - 1);
+        adapter.notifyItemInserted(messages.size() - 1);
+        messageHistory.scrollToPosition(adapter.getItemCount() - 1);
 
         sendMessageWithRetries(chat, messages, 3);
     }
@@ -119,8 +122,8 @@ public class MessengerActivity extends AppCompatActivity {
 
                 messages.add(messageRepository.addMessage(result, chat.getId(), MessageType.assistant));
 
-                adapter.notifyDataSetChanged();
-                messageHistory.setSelection(adapter.getCount() - 1);
+                adapter.notifyItemInserted(messages.size() - 1);
+                messageHistory.scrollToPosition(adapter.getItemCount() - 1);
 
                 if (matcherResult.find() && matcherStatus.find()) {
                     String numberString = matcherResult.group();
@@ -143,11 +146,11 @@ public class MessengerActivity extends AppCompatActivity {
                     sendMessageWithRetries(chat, messages, retries - 1);
                 } else {
                     int size = messages.size() - 1;
-                    messages.get(size).setContent("Ошибка соединения, пожалуйста повторите попытку чуть позже");
+                    messages.get(size).setContent("Ошибка соединения, пожалуйста повторите попытку чуть позже.");
                     messages.get(size).setType(MessageType.error);
                     messageRepository.updateMessage(messages.get(size));
                     editMessage.setEnabled(true);
-                    adapter.notifyDataSetChanged();
+                    adapter.notifyItemInserted(messages.size() - 1);
                 }
             }
         });

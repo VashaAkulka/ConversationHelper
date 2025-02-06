@@ -91,7 +91,7 @@ public class ArticleAdapter extends ArrayAdapter<Article> {
                         .into(articlePhoto);
 
                 articlePhoto.setVisibility(View.VISIBLE);
-            }
+            } else articlePhoto.setVisibility(View.GONE);
 
             likeRepository.getCountLikeByArticleId(article.getId()).thenAccept(countLike -> likeNumberText.setText(String.valueOf(countLike)));
             commentRepository.getCountCommentByArticleId(article.getId()).thenAccept(countComment -> commentNumberText.setText(String.valueOf(countComment)));

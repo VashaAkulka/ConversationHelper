@@ -39,7 +39,7 @@ public class ChatRepository {
         CompletableFuture<List<Chat>> future = new CompletableFuture<>();
         List<Chat> chatList = new ArrayList<>();
 
-        chatCollection.get()
+        chatCollection.orderBy("startTime").get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {

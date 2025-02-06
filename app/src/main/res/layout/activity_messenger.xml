@@ -17,12 +17,10 @@
         android:layout_margin="10dp"
         android:onClick="onClickBackActivity" />
 
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/message_history"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:divider="@null"
-        android:dividerHeight="0dp"
         app:layout_constraintBottom_toTopOf="@+id/edit_message"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -39,7 +37,7 @@
         app:layout_constraintStart_toEndOf="@id/speech_button"
         app:layout_constraintTop_toBottomOf="@id/message_history"
         android:src="@drawable/baseline_arrow_upward_24"
-        android:background="@drawable/round_button_message_controll"
+        android:background="@drawable/round_button_message_control"
         android:scaleType="fitXY"
         android:adjustViewBounds="true" />
 
@@ -54,7 +52,7 @@
         app:layout_constraintStart_toEndOf="@id/edit_message"
         app:layout_constraintTop_toBottomOf="@id/message_history"
         android:src="@drawable/baseline_mic_24"
-        android:background="@drawable/round_button_message_controll"
+        android:background="@drawable/round_button_message_control"
         android:scaleType="fitXY"
         android:adjustViewBounds="true" />
 

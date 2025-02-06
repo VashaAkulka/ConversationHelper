@@ -66,7 +66,7 @@ public class ChatGptClient {
                 }
             }
 
-            ChatRequest chatRequest = new ChatRequest("gpt-3.5-turbo", messages);
+            ChatRequest chatRequest = new ChatRequest("gpt-4-turbo", messages);
 
             service.sendMessage(chatRequest).enqueue(new Callback<ChatResponse>() {
                 @Override

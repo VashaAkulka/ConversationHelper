@@ -53,6 +53,24 @@ public class UserRepository {
         return future;
     }
 
+    public CompletableFuture<User> getUserByEmail(String email) {
+        CompletableFuture<User> future = new CompletableFuture<>();
+
+        usersCollection.whereEqualTo("email", email).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        if (!task.getResult().isEmpty()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                User user = document.toObject(User.class);
+                                future.complete(user);
+                            }
+                        } else future.complete(null);
+                    }
+                });
+
+        return future;
+    }
+
     public CompletableFuture<Boolean> updateUser(User user) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
 

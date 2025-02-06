@@ -65,7 +65,7 @@ public class ArticleActivity extends AppCompatActivity implements OnCommentDelet
                 Glide.with(this)
                         .load(article.getPhoto())
                         .apply(new RequestOptions()
-                                .centerCrop()
+                                .fitCenter()
                                 .transform(new RoundedCorners(30)))
                         .into(photo);
 

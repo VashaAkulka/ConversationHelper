@@ -41,9 +41,10 @@
         <ImageView
             android:id="@+id/article_photo"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="300dp"
             android:layout_marginBottom="40dp"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:scaleType="fitXY"/>
 
         <TextView
             android:id="@+id/content_article"
@@ -124,7 +125,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:src="@drawable/baseline_arrow_upward_24"
-                android:background="@drawable/round_button_message_controll"
+                android:background="@drawable/round_button_message_control"
                 android:scaleType="fitXY"
                 android:adjustViewBounds="true"
                 android:layout_marginStart="15dp"

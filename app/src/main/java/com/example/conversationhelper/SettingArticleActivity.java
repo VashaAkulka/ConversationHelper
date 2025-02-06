@@ -55,10 +55,12 @@ public class SettingArticleActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String articleId = intent.getStringExtra("ARTICLE");
-        articleRepository.getArticleById(articleId).thenAccept(article -> {
-            this.article = article;
-            setStartValue();
-        });
+        if (articleId != null) {
+            articleRepository.getArticleById(articleId).thenAccept(article -> {
+                this.article = article;
+                setStartValue();
+            });
+        }
 
         imagePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -77,16 +79,15 @@ public class SettingArticleActivity extends AppCompatActivity {
     private void setStartValue() {
         Button addEditButton = findViewById(R.id.save_update_article_button);
         TextView header = findViewById(R.id.header_setting_article);
-        if (article != null) {
-            isCreate = false;
-            addEditButton.setText("Обновить");
-            header.setText("Редактирование статьи");
 
-            title.setText(article.getTitle());
-            description.setText(article.getDescription());
-            content.setText(article.getContent());
-            if (article.getPhoto() != null) photoUriLabel.setText(article.getPhoto().substring(0, 75));
-        } else header.setText("Создание статьи");
+        isCreate = false;
+        addEditButton.setText("Обновить");
+        header.setText("Редактирование статьи");
+
+        title.setText(article.getTitle());
+        description.setText(article.getDescription());
+        content.setText(article.getContent());
+        if (article.getPhoto() != null) photoUriLabel.setText(article.getPhoto().substring(0, 75));
     }
 
     public void onClickAddUpdateArticle(View view) {

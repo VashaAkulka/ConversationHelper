@@ -126,6 +126,8 @@ public class ProfileActivity extends AppCompatActivity {
 
                                 Authentication.getUser().setAvatar(imageUrlString);
                                 userRepository.updateUser(Authentication.getUser());
+
+                                sharedPreferencesUtil.saveUser(Authentication.getUser());
                             }));
                         }
                     }
@@ -355,6 +357,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                                 labelName.setText(Authentication.getUser().getName());
                                 labelEmail.setText(Authentication.getUser().getEmail());
+                                sharedPreferencesUtil.saveUser(Authentication.getUser());
                                 dialog.dismiss();
                             } else {
                                 errorText.setText("Такой пользователь уже существует");
@@ -402,7 +405,10 @@ public class ProfileActivity extends AppCompatActivity {
 
                 User newUser = new User(user.getId(), user.getRole(), user.getName(), newPassword, user.getEmail(), user.getAvatar());
                 userRepository.updateUser(newUser)
-                        .thenAccept(aBoolean -> user.setPassword(newPassword));
+                        .thenAccept(aBoolean -> {
+                            user.setPassword(newPassword);
+                            sharedPreferencesUtil.saveUser(Authentication.getUser());
+                        });
                 dialog.dismiss();
             });
         });
