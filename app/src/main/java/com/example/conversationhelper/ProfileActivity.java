@@ -102,11 +102,12 @@ public class ProfileActivity extends AppCompatActivity {
         imagePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
-                    LoadingDialog loadingDialog;
-                    loadingDialog = new LoadingDialog(this);
+                    LoadingDialog loadingDialog = new LoadingDialog(this);
                     loadingDialog.show();
+
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         Uri imageUri = result.getData().getData();
+
                         if (imageUri != null) {
                             Glide.with(this)
                                     .load(imageUri)
@@ -128,10 +129,21 @@ public class ProfileActivity extends AppCompatActivity {
                                 userRepository.updateUser(Authentication.getUser());
 
                                 sharedPreferencesUtil.saveUser(Authentication.getUser());
-                            }));
+                            })).addOnFailureListener(e -> {
+                                loadingDialog.dismiss();
+                                findViewById(R.id.image_avatar).setEnabled(true);
+                            });
+
+                        } else {
+                            loadingDialog.dismiss();
+                            findViewById(R.id.image_avatar).setEnabled(true);
                         }
+                    } else {
+                        loadingDialog.dismiss();
+                        findViewById(R.id.image_avatar).setEnabled(true);
                     }
                 });
+
 
         createPieDiagram();
         createBarDiagram();
